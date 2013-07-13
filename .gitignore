@@ -1,0 +1,4 @@
+*.o
+qrc_resource.*
+*.swp
+

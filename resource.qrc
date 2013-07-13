@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/small/plain.gif</file>
+        <file>image/small/grass.gif</file>
+        <file>image/small/walls.gif</file>
+        <file>image/small/steels.gif</file>
+        <file>image/small/symbol.gif</file>
+        <file>image/small/p1tankL.gif</file>
+        <file>image/small/p1tankR.gif</file>
+        <file>image/small/p1tankU.gif</file>
+        <file>image/small/p1tankD.gif</file>
+        <file>image/small/missile1.gif</file>
+    </qresource>
+</RCC>
