@@ -10,5 +10,6 @@
         <file>image/small/p1tankU.gif</file>
         <file>image/small/p1tankD.gif</file>
         <file>image/small/missile1.gif</file>
+        <file>image/small/gameOver.gif</file>
     </qresource>
 </RCC>

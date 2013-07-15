@@ -33,10 +33,18 @@ private:
 	void addSteel(QPoint p);
 
 	void drawMap(QPainter &painter);
-	/* is tank valid to move here? */
+	
+	/* delete all missiles */
+	void clearMissile();
+	/* delte walls and steels */
+	void clearMap();
 
 	Map::map current_map;
 	Tank *player;
+	int timer;
+	/* Is player lose the game ? */
+	bool lose;
+
 	
 	/* all live missiles */
 	std::list<Missile*> missiles;

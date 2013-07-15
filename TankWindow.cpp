@@ -10,9 +10,7 @@ const QPoint startPoint(1,1);
 
 TankWindow::TankWindow()
 {
-	loadMap();
 	startGame();
-	startTimer(20);
 	setFixedSize(pic_width*map_width, pic_height*map_height);
 }
 
@@ -23,7 +21,10 @@ void TankWindow::addMissile(Missile *missile)
 
 void TankWindow::startGame()
 {
+	loadMap();
 	player = new Tank(startPoint, this);
+	timer = startTimer(20);
+	lose = false;
 }
 
 void TankWindow::loadMap()
@@ -44,7 +45,7 @@ void TankWindow::loadMap()
 			}
 			else if (current_map[j][i] == Map::symbol)
 			{
-				Qrect rect(pic_width*j, pic_height*i, 
+				QRect rect(pic_width*j, pic_height*i, 
 						pic_width, pic_height);
 				symbolRect = rect;
 			}
@@ -54,6 +55,14 @@ void TankWindow::loadMap()
 /* TODO: */
 void TankWindow::userLose()
 {
+	killTimer(timer);
+	player->kill();
+	delete player;
+	player = NULL;
+	clearMissile();
+	clearMap();
+	lose = true;
+	repaint();
 }
 
 void TankWindow::addWall(QPoint p)
@@ -67,6 +76,23 @@ void TankWindow::addSteel(QPoint p)
 	QRect steel(p.x(), p.y(), pic_width, pic_height);
 	steels.push_back(steel);
 }
+
+void TankWindow::clearMissile()
+{
+	for (std::list<Missile*>::iterator it=missiles.begin();
+			it != missiles.end(); ++it)
+	{
+		delete *it;
+	}
+	missiles.clear();
+}
+
+void TankWindow::clearMap()
+{
+	walls.clear();
+	steels.clear();
+}
+
 
 int TankWindow::getMap(int x, int y)
 {
@@ -116,6 +142,11 @@ void TankWindow::timerEvent(QTimerEvent *)
 
 void TankWindow::keyPressEvent(QKeyEvent *event)
 {
+	bool isRestart = event->key()==Qt::Key_R;
+	if (player == NULL && !isRestart)
+		return;
+	if (player == NULL && isRestart)
+		startGame();
 	switch (event->key())
 	{
     case Qt::Key_Up:
@@ -186,7 +217,19 @@ void TankWindow::paintEvent(QPaintEvent *)
 	{
 		(*it)->drawMissile(painter);
 	}
-	player->drawTank(painter);
+	if (player !=NULL)
+		player->drawTank(painter);
+	if (lose)
+	{
+		QImage pic;
+		pic.load(":image/small/gameOver.gif");
+		QImage gameOver = pic.scaled(5*pic_width
+				, 5*pic_height);
+		QPoint p(4*pic_width, 4*pic_height);
+		painter.drawImage(p, gameOver);
+
+	}
+
 }
 
 

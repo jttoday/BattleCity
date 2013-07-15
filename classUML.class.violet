@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_25" class="java.beans.XMLDecoder">
+ <object class="com.horstmann.violet.ClassDiagramGraph">
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>Map::map current_map
+Tank* player
+int timer
+bool lose;
+std::list&lt;Missile*&gt; missile;
+std::list&lt;QRect&gt; walls;
+std::list&lt;QRect&gt; steels;
+QRect symbolRect;</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>TankWindow();
+getMap(int, int);
+addMissile(Missile *missile);</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>TankWindow</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double" id="Point2D$Double0">
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>x</string>
+     <void method="set">
+      <object idref="Point2D$Double0"/>
+      <double>204.3378289066526</double>
+     </void>
+    </void>
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>y</string>
+     <void method="set">
+      <object idref="Point2D$Double0"/>
+      <double>73.9988845423269</double>
+     </void>
+    </void>
+    <void method="setLocation">
+     <double>204.3378289066526</double>
+     <double>73.9988845423269</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>QPoint position;
+QPoint old_position;
+Direction::Direction dir
+TankWindow *tankWindow;
+</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>Tank(QPoint startPoint, TankWindow *tankWindow, 
+   Direction::Direction dir= Direction::up);
+void moveUp();
+void moveDown();
+void moveLeft();
+void moveRight();
+void shoot();  
+bool isAlive();
+void kill();
+void drawTank(QPainter &amp;painter);
+QRect getTankRect();
+void undo();
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>Tank</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double" id="Point2D$Double1">
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>x</string>
+     <void method="set">
+      <object idref="Point2D$Double1"/>
+      <double>144.6341834236389</double>
+     </void>
+    </void>
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>y</string>
+     <void method="set">
+      <object idref="Point2D$Double1"/>
+      <double>392.69862592348466</double>
+     </void>
+    </void>
+    <void method="setLocation">
+     <double>144.6341834236389</double>
+     <double>392.69862592348466</double>
+    </void>
+   </object>
+  </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode">
+    <void property="attributes">
+     <void property="text">
+      <string>QPoint position;
+Direction::Direction dir;
+TankWindow* tankWindow;
+bool alive;
+</string>
+     </void>
+    </void>
+    <void property="methods">
+     <void property="text">
+      <string>Missile(QPoint startPoint, Direction::Direction dir,
+		TankWindow *tankWindow);
+void move();
+bool isAlive();
+void kill();
+bool hitRect(QRect&amp; rect);
+bool outOfMap();
+void drawMissile(QPainter &amp;painter);
+</string>
+     </void>
+    </void>
+    <void property="name">
+     <void property="text">
+      <string>Missile</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double" id="Point2D$Double2">
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>x</string>
+     <void method="set">
+      <object idref="Point2D$Double2"/>
+      <double>634.0358971013007</double>
+     </void>
+    </void>
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>y</string>
+     <void method="set">
+      <object idref="Point2D$Double2"/>
+      <double>203.49693249139904</double>
+     </void>
+    </void>
+    <void method="setLocation">
+     <double>634.0358971013007</double>
+     <double>203.49693249139904</double>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

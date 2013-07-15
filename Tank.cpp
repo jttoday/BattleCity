@@ -38,6 +38,8 @@ void Tank::moveRight()
 
 void Tank::move(Direction::Direction dir)
 {
+	if (!isAlive())
+		return;
 	old_position = position;
 	switch (dir)
 	{
@@ -67,6 +69,8 @@ void Tank::move(Direction::Direction dir)
  */
 void Tank::shoot()
 {
+	if (!isAlive())
+		return;
 	QPoint missilePoint;
 	int x = position.x();
 	int y = position.y();
