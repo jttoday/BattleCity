@@ -23,5 +23,9 @@
         <file>image/small/blast6.gif</file>
         <file>image/small/blast7.gif</file>
         <file>image/small/blast8.gif</file>
+        <file>image/small/select.gif</file>
+        <file>image/small/select.png</file>
+        <file>image/small/logo.gif</file>
+        <file>image/small/selecttank.gif</file>
     </qresource>
 </RCC>

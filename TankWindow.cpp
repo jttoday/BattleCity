@@ -9,6 +9,7 @@
 #include <QPoint>
 #include <QRect>
 #include <vector>
+#include <QDebug>
 
 #define DEBUGx
 #ifdef DEBUG
@@ -30,8 +31,11 @@ void TankWindow::addMissile(Missile *missile)
 
 void TankWindow::startGame()
 {
+	clearMap();
+	choosing = true;
+	playerNumber = 1;
 	loadMap();
-	player = new Tank(startPoints[3], this);
+	player1 = new Tank(startPoints[3], this);
 	enemies.push_back(new EnemyTank(startPoints[0], this));
 	enemies.push_back(new EnemyTank(startPoints[1], this));
 	enemies.push_back(new EnemyTank(startPoints[2], this));
@@ -39,6 +43,16 @@ void TankWindow::startGame()
 	enemyTimer = startTimer(250);
 	produceTimer = startTimer(3000);
 	lose = false;
+}
+
+int TankWindow::chooseType()
+{
+	return 0;
+}
+
+bool TankWindow::isChoosing()
+{
+	return choosing;
 }
 
 void TankWindow::loadMap()
@@ -56,6 +70,11 @@ void TankWindow::loadMap()
 			{
 				QPoint p(pic_width*j, pic_height*i);
 				addSteel(p);
+			}
+			else if (current_map[j][i] == Map::grass)
+			{
+				QPoint p(pic_width*j, pic_height*i);
+				addGrass(p);
 			}
 			else if (current_map[j][i] == Map::symbol)
 			{
@@ -76,12 +95,11 @@ void TankWindow::userLose()
 {
 	killTimer(missileTimer);
 	killTimer(enemyTimer);
-	killTank(player);
-	delete player;
-	player = NULL;
+	killTank(player1);
+	delete player1;
+	player1 = NULL;
 	clearMissile();
 	clearEnemy();
-	clearMap();
 	lose = true;
 	repaint();
 }
@@ -111,6 +129,12 @@ void TankWindow::addSteel(QPoint p)
 {
 	QRect steel(p.x(), p.y(), pic_width, pic_height);
 	steels.push_back(steel);
+}
+
+void TankWindow::addGrass(QPoint p)
+{
+	QRect grass(p.x(), p.y(), pic_width, pic_height);
+	grasses.push_back(grass);
 }
 
 void TankWindow::addEnemy()
@@ -145,6 +169,7 @@ void TankWindow::clearMap()
 {
 	walls.clear();
 	steels.clear();
+	grasses.clear();
 }
 
 void TankWindow::killTank(Tank* tank)
@@ -162,7 +187,8 @@ int TankWindow::getMap(int x, int y)
 void TankWindow::timerEvent(QTimerEvent *event)
 {
 
-	if (lose)
+	
+	if (lose || isChoosing())
 		return;
 	if (event->timerId() == missileTimer)
 	{
@@ -229,8 +255,8 @@ void TankWindow::moveMissile()
 				break; // break 'steel' loop
 			}
 
-		/* Do missiles hit player? */
-		if ((*it)-> hitRect(player->getTankRect())) 
+		/* Do missiles hit player1? */
+		if ((*it)-> hitRect(player1->getTankRect())) 
 		{
 			userLose();
 			break;
@@ -267,27 +293,44 @@ void TankWindow::moveMissile()
 
 void TankWindow::keyPressEvent(QKeyEvent *event)
 {
-	bool isRestart = event->key()==Qt::Key_R;
-	if (player == NULL && !isRestart)
+	if (isChoosing())
+	{
+		switch (event->key())
+		{
+		case Qt::Key_Up: case Qt::Key_Down:
+			playerNumber = 3- playerNumber;
+			break;
+		case Qt::Key_Enter: case Qt::Key_Return:
+			choosing = false;
+			break;
+		default:
+			break;
+		}
+		repaint();
 		return;
-	if (player == NULL && isRestart)
+	}
+
+	bool isRestart = event->key()==Qt::Key_R;
+	if (player1 == NULL && !isRestart)
+		return;
+	if (player1 == NULL && isRestart)
 		startGame();
 	switch (event->key())
 	{
     case Qt::Key_Up:
-		player->moveUp();
+		player1->moveUp();
         break;
     case Qt::Key_Down:
-		player->moveDown();
+		player1->moveDown();
         break;
     case Qt::Key_Left:
-		player->moveLeft();
+		player1->moveLeft();
         break;
     case Qt::Key_Right:
-		player->moveRight();
+		player1->moveRight();
         break;
 	case Qt::Key_Space:
-		player->shoot();
+		player1->shoot();
 		break;
     default:
         break;
@@ -295,60 +338,108 @@ void TankWindow::keyPressEvent(QKeyEvent *event)
 	repaint();
 }
 
-void TankWindow::drawMap(QPainter &painter)
+
+void TankWindow::drawWall(QPainter &painter)
 {
-	/* first draw back ground */
-	QRect background(0, 0, pic_width*map_width, pic_height*map_height);
-	painter.fillRect(background,Qt::black);
-	
-	QImage grass;
-	grass.load(":image/small/grass.gif");
 	QImage wall;
 	wall.load(":image/small/walls.gif");
+	drawRects(painter, wall, walls);
+}
+
+void TankWindow::drawSteel(QPainter &painter)
+{
 	QImage steel;
 	steel.load(":image/small/steels.gif");
-	QImage symbol;
-	symbol.load(":image/small/symbol.gif");
-	for (int i=0; i< map_width; ++i)
-		for (int j=0; j < map_height; ++j)
-		{
-			QPoint p(pic_height*i, pic_width*j);	
-			switch(current_map[i][j])
-			{
-				case Map::grass:
-					painter.drawImage(p,grass);
-					break;
-				case Map::wall:
-					painter.drawImage(p,wall);
-					break;
-				case Map::steel:
-					painter.drawImage(p,steel);
-					break;
-				case Map::symbol:
-					painter.drawImage(p,symbol);
-				default:
-					break;
-			}
-		}
+	drawRects(painter, steel, steels);
 }
+
+void TankWindow::drawGrass(QPainter &painter)
+{
+	QImage grass;
+	grass.load(":image/small/grass.gif");
+	drawRects(painter, grass, grasses);
+}
+
+void TankWindow::drawSymbol(QPainter &painter)
+{
+	QImage symbol(":image/small/symbol.gif");
+	painter.fillRect(symbolRect, symbol);
+}
+
+void TankWindow::drawRects(QPainter &painter, const QImage& image,
+							rect_list& rects)
+{
+	for (rect_it it = rects.begin(); it!= rects.end();++it)
+	{
+		painter.fillRect(*it, image);
+	}
+}
+
+void TankWindow::drawChoose(QPainter &painter)
+{
+		QImage pic;
+		/* draw logo */
+		pic.load(":image/small/logo.gif");
+		QImage logo = pic;
+		QPoint t(-320,-180);
+		painter.drawImage(t, pic);
+
+		/* draw select */
+		pic.load(":image/small/select.png");
+		QImage select = pic.scaled(8*pic_width
+				, 2.7*pic_height);
+		QPoint p(2.3*pic_width, 7*pic_height);
+		painter.drawImage(p, select);
+
+		/* draw small tank */
+		pic.load(":image/small/selecttank.gif");
+		int height = (6.5+playerNumber)*pic_height;
+		p.setY(height);
+		p.setX(1.7*pic_width);
+		painter.drawImage(p, pic);
+}
+
 
 void TankWindow::paintEvent(QPaintEvent *)
 {
 	QPainter painter(this);
-	drawMap(painter);
+	/* first draw back ground */
+	QRect background(0, 0, pic_width*map_width, pic_height*map_height);
+	painter.fillRect(background,Qt::black);
+	/* if is choosing */
+	if (isChoosing())
+	{
+		drawChoose(painter);
+		return;
+	}
+
+	/* draw symbol */
+	drawSymbol(painter);
+	/* draw wall and steel */
+	drawWall(painter);
+	drawSteel(painter);
+	/* drawEnemy */
 	for (std::list<EnemyTank*>::iterator it = enemies.begin();
 			it != enemies.end();++it)
 	{
 		(*it)->drawTank(painter);
 	}
 
+	/* drawMissile */
 	for (std::list<Missile*>::iterator it=missiles.begin();
 			it != missiles.end();++it)
 	{
 		(*it)->drawMissile(painter);
 	}
-	if (player !=NULL)
-		player->drawTank(painter);
+
+	/* draw player */
+	if (player1 !=NULL)
+		player1->drawTank(painter);
+
+	/* draw grass */
+	drawGrass(painter);
+
+	/* if lose draw game over*/
 	if (lose)
 	{
 		QImage pic;
@@ -357,9 +448,7 @@ void TankWindow::paintEvent(QPaintEvent *)
 				, 5*pic_height);
 		QPoint p(4*pic_width, 4*pic_height);
 		painter.drawImage(p, gameOver);
-
 	}
-
 }
 
 

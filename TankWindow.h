@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <list>
 #include <vector>
+#include <QPainter>
+#include <QImage>
 #include "TankConst.h"
 #include "Blast.h"
 
@@ -12,14 +14,6 @@ class Tank;
 class QRect;
 class EnemyTank;
 class QPoint;
-
-typedef std::list<EnemyTank*> enemy_list;
-typedef enemy_list::iterator enemy_it;
-typedef std::list<Missile*> missile_list;
-typedef missile_list::iterator missile_it;
-typedef std::list<Blast> blast_list;
-typedef blast_list::iterator blast_it;
-typedef std::vector<QPoint> point_vector;
 
 class TankWindow :public QMainWindow
 {
@@ -39,15 +33,31 @@ protected:
 private:
 
 	void startGame(); 
+	/* choose game type ie:1p or 2p */
+	int chooseType();
+
 	void loadMap();
 	/* user lose game */
 	void userLose();
 	
 	void addWall(QPoint p);
 	void addSteel(QPoint p);
+	void addGrass(QPoint p);
 	void addEnemy();
+	/* draw start menu */
+	void drawChoose(QPainter &painter);
 
-	void drawMap(QPainter &painter);
+	/* draw wall, steel, and grass */
+	void drawWall(QPainter &painter);
+	void drawSteel(QPainter &painter);
+	void drawGrass(QPainter &painter);
+
+	void drawSymbol(QPainter& painter);
+
+
+	/* helper method to draw */
+	void drawRects(QPainter &painter, const QImage& image, 
+						 rect_list& rects);
 
 	/* move enemies */
 	void moveEnemy();
@@ -63,9 +73,12 @@ private:
 	void clearMap();
 	/* kill a tank */
 	void killTank(Tank* tank);
+	
+
+	bool isChoosing();
 
 	Map::map current_map;
-	Tank *player;
+	Tank *player1, *player2;
 
 	/* timers */
 	int missileTimer;
@@ -73,14 +86,19 @@ private:
 	int produceTimer;
 	/* Is player lose the game ? */
 	bool lose;
+	/* Is in the select window? */
+	bool choosing;
+	/* 1p or 2p */
+	int playerNumber;
 
 	/* live enemy tanks */
 	enemy_list enemies;
 	/* all live missiles */
 	missile_list missiles;
-	/* list of walls and steels */
-	std::list<QRect> walls;
-	std::list<QRect> steels;
+	/* list of walls and steels and grass */
+	rect_list walls;
+	rect_list steels;
+	rect_list grasses;
 	/* vector of enemy start points */
 	point_vector startPoints;
 
