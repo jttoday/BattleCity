@@ -73,6 +73,8 @@ private:
 	void clearMap();
 	/* kill a tank */
 	void killTank(Tank* tank);
+	/* kill a player */
+	Tank* killPlayer(Tank* player);
 	
 
 	bool isChoosing();

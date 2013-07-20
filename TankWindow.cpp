@@ -19,9 +19,12 @@ using namespace std;
 
 TankWindow::TankWindow()
 {
-	startGame();
+	choosing = true;
 	setFixedSize(pic_width*map_width, pic_height*map_height);
 	srand(time(NULL));
+	player1 = NULL;
+	player2 = NULL;
+	playerNumber = 1;
 }
 
 void TankWindow::addMissile(Missile *missile)
@@ -32,10 +35,10 @@ void TankWindow::addMissile(Missile *missile)
 void TankWindow::startGame()
 {
 	clearMap();
-	choosing = true;
-	playerNumber = 1;
 	loadMap();
 	player1 = new Tank(startPoints[3], this);
+	if (playerNumber == 2)
+		player2 = new Tank(startPoints[4], this);
 	enemies.push_back(new EnemyTank(startPoints[0], this));
 	enemies.push_back(new EnemyTank(startPoints[1], this));
 	enemies.push_back(new EnemyTank(startPoints[2], this));
@@ -95,9 +98,6 @@ void TankWindow::userLose()
 {
 	killTimer(missileTimer);
 	killTimer(enemyTimer);
-	killTank(player1);
-	delete player1;
-	player1 = NULL;
 	clearMissile();
 	clearEnemy();
 	lose = true;
@@ -177,6 +177,19 @@ void TankWindow::killTank(Tank* tank)
 	tank->kill();
 }
 
+Tank* TankWindow::killPlayer(Tank* player)
+{
+	if (player == NULL)
+	{
+		qDebug() << "Warning: kill a NULL player!";
+		return NULL;
+	}
+	killTank(player);
+	delete player;
+	return NULL;
+}
+
+
 
 int TankWindow::getMap(int x, int y)
 {
@@ -229,6 +242,10 @@ void TankWindow::moveMissile()
 
 		/* Do missiles hit symbol ? */
 		if ((*it) -> hitRect(symbolRect)){
+			if (player1 != NULL)
+				player1 = killPlayer(player1);
+			if (player2 != NULL)
+				player2 = killPlayer(player2);
 			userLose();
 			break;
 		}
@@ -256,11 +273,24 @@ void TankWindow::moveMissile()
 			}
 
 		/* Do missiles hit player1? */
-		if ((*it)-> hitRect(player1->getTankRect())) 
+		if (player1 != NULL && 
+				(*it)-> hitRect(player1->getTankRect())) 
 		{
-			userLose();
+			player1 = killPlayer(player1);
+			if (player2 == NULL)
+				userLose();
 			break;
 		}
+		/* Do missiles hit player2? */
+		if (player2 != NULL && 
+				(*it)-> hitRect(player2->getTankRect())) 
+		{
+			player2 = killPlayer(player2);
+			if (player1 == NULL)
+				userLose();
+			break;
+		}
+
 
 		/* Do missiles hit enemies? */
 		std::list<EnemyTank*>::iterator eit = enemies.begin();
@@ -302,6 +332,7 @@ void TankWindow::keyPressEvent(QKeyEvent *event)
 			break;
 		case Qt::Key_Enter: case Qt::Key_Return:
 			choosing = false;
+			startGame();
 			break;
 		default:
 			break;
@@ -311,10 +342,9 @@ void TankWindow::keyPressEvent(QKeyEvent *event)
 	}
 
 	bool isRestart = event->key()==Qt::Key_R;
+	/* Handle player1 */
 	if (player1 == NULL && !isRestart)
-		return;
-	if (player1 == NULL && isRestart)
-		startGame();
+		goto p2;
 	switch (event->key())
 	{
     case Qt::Key_Up:
@@ -332,10 +362,39 @@ void TankWindow::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_Space:
 		player1->shoot();
 		break;
+
+	case Qt::Key_W:
     default:
         break;
     }
+p2:
+	if (player2 == NULL && !isRestart)
+		goto out;
+	switch (event->key())
+	{
+	case Qt::Key_W:
+		player2->moveUp();
+		break;
+	case Qt::Key_A:
+		player2->moveLeft();
+		break;
+	case Qt::Key_S:
+		player2->moveDown();
+		break;
+	case Qt::Key_D:
+		player2->moveRight();
+		break;
+	case Qt::Key_J:
+		player2->shoot();
+		break;
+	default:
+		break;
+	}
+out:
+	if (isRestart)
+		choosing = true;
 	repaint();
+
 }
 
 
@@ -435,6 +494,9 @@ void TankWindow::paintEvent(QPaintEvent *)
 	/* draw player */
 	if (player1 !=NULL)
 		player1->drawTank(painter);
+
+	if (player2 !=NULL)
+		player2->drawTank(painter);
 
 	/* draw grass */
 	drawGrass(painter);

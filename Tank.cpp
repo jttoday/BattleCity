@@ -4,6 +4,8 @@
 #include "Missile.h"
 #include <QtGui>
 #include <iostream>
+#define NO_HIT_OTHER
+
 using namespace std;
 
 extern Map::map firstMap;
@@ -147,6 +149,9 @@ bool Tank::hitBarrier()
 
 bool Tank::hitOtherTank()
 {
+#ifdef NO_HIT_OTHER
+	return false;
+#endif
 	enemy_list enemies = tankWindow->getEnemies();
 	for (enemy_it it = enemies.begin();it != enemies.end();++it)
 	{
