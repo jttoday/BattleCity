@@ -7,11 +7,16 @@ class QPainter;
 class QKeyEvent;
 class QRect;
 class TankWindow;
+class QImage;
+class Blast;
+
+
 class Tank 
 {
 public:
 	Tank(QPoint startPoint, TankWindow *tankWindow, 
 			Direction::Direction dir= Direction::up);
+	virtual ~Tank();
 	/* move	 */
 	void moveUp();
 	void moveDown();
@@ -23,7 +28,7 @@ public:
 	bool isAlive();
 	void kill();
 	/* draw itself */
-	void drawTank(QPainter &painter);
+	virtual	void drawTank(QPainter &painter);
 
 	/* get the rect where tank is */
 	QRect getTankRect();
@@ -31,17 +36,35 @@ public:
 	/*  if Tank is not allowed to move */
 	void undo();
 
-private:
-	QPoint position;
-	QPoint old_position;
+	bool hitRect(const QRect& rect);
+
+protected:
+	/* move in certail direction
+	 * return true if successfully moved
+	 */
+	virtual bool move(Direction::Direction dir);
+
+	/* move in old direction */
+	virtual bool move();
+
+	/* helper method to draw Tank */
+	void drawTankPict(QPainter &painter, QImage &tank);
+
+	/* Is tank hit other tanks? */
+	bool hitOtherTank();
+	
 	/* Tank direction */
 	Direction::Direction dir;
+private:
 	
+	QPoint position;
+	QPoint old_position;
 	TankWindow *tankWindow;
+	Blast* blast;
 
 
-	void move(Direction::Direction dir);
 	bool hitBarrier();
+	bool outOfMap();
 	bool alive;
 };
 

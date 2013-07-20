@@ -9,7 +9,19 @@
         <file>image/small/p1tankR.gif</file>
         <file>image/small/p1tankU.gif</file>
         <file>image/small/p1tankD.gif</file>
+        <file>image/small/enemy1L.gif</file>
+        <file>image/small/enemy1R.gif</file>
+        <file>image/small/enemy1U.gif</file>
+        <file>image/small/enemy1D.gif</file>
         <file>image/small/missile1.gif</file>
         <file>image/small/gameOver.gif</file>
+        <file>image/small/blast1.gif</file>
+        <file>image/small/blast2.gif</file>
+        <file>image/small/blast3.gif</file>
+        <file>image/small/blast4.gif</file>
+        <file>image/small/blast5.gif</file>
+        <file>image/small/blast6.gif</file>
+        <file>image/small/blast7.gif</file>
+        <file>image/small/blast8.gif</file>
     </qresource>
 </RCC>

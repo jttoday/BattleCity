@@ -1,4 +1,5 @@
 #include "Tank.h"
+#include "EnemyTank.h"
 #include "TankWindow.h"
 #include "Missile.h"
 #include <QtGui>
@@ -14,6 +15,12 @@ Tank::Tank(QPoint startPoint, TankWindow *tankWindow,
 	this -> dir= dir;
 	this -> tankWindow = tankWindow;
 	alive = true;
+}
+
+Tank::~Tank()
+{
+	if (!alive)
+		delete blast;
 }
 
 void Tank::moveUp()
@@ -36,10 +43,10 @@ void Tank::moveRight()
 	move(Direction::right);
 }
 
-void Tank::move(Direction::Direction dir)
+bool Tank::move(Direction::Direction dir)
 {
-	if (!isAlive())
-		return;
+	if (!alive)
+		return true;
 	old_position = position;
 	switch (dir)
 	{
@@ -59,17 +66,29 @@ void Tank::move(Direction::Direction dir)
 		break;
 	}
 	this->dir = dir;
+
 	/* if cannot move to there */
-	if (hitBarrier())
+	if (outOfMap() || hitBarrier() || hitOtherTank())
+	{
 		undo();
+		return false;
+	}
+	return true;
 }
+
+
+bool Tank::move()
+{
+	return move(dir);
+}
+
 
 /*
  * shoot missiles
  */
 void Tank::shoot()
 {
-	if (!isAlive())
+	if (!alive)
 		return;
 	QPoint missilePoint;
 	int x = position.x();
@@ -101,49 +120,49 @@ void Tank::shoot()
 	tankWindow->addMissile(missile);
 }
 
+bool Tank::hitRect(const QRect& rect)
+{
+
+	return getTankRect().intersects(rect);
+}
+
 bool Tank::hitBarrier()
 {
-	QRect tank_rect = getTankRect();
-	if (tank_rect.left() < 0 
-			|| tank_rect.right() > pic_width*map_width   
-			|| tank_rect.top() < 0
-			|| tank_rect.bottom() > pic_width*map_width)
-		return true;
-	int left	= tank_rect.left()	/ pic_width;
-	int right	= tank_rect.right() / pic_width;
-	int top		= tank_rect.top()	/ pic_height;
-	int bottom	= tank_rect.bottom()/ pic_height;
-	bool verticleMeet = (bottom * pic_height == tank_rect.bottom());
-	bool horrizalMeet = (right * pic_width == tank_rect.right());
-	int a11 = tankWindow->getMap(left, top);
-	int a12 = tankWindow->getMap(right, top);
-	int a21 = tankWindow->getMap(left, bottom);
-	int a22 = tankWindow->getMap(right, bottom);
-	if	((!verticleMeet && !horrizalMeet && 
-				(	a11 !=0  || a12 !=0
-				||	a21 !=0	||  a22 !=0))
-		||(verticleMeet && !horrizalMeet &&
-				(	a11 !=0 || a12 !=0))
-		||(!verticleMeet && horrizalMeet &&
-				(	a11 !=0 || a21 != 0))
-		||(verticleMeet && horrizalMeet	&&
-				(	a11 !=0 )))
+	rect_list walls = tankWindow->getWalls();
+
+	for (rect_it it = walls.begin();it != walls.end();++it)
 	{
-		
-		/*
-		cout << "----------" << endl;
-		cout << verticleMeet << horrizalMeet << endl;
-		cout << tank_rect.left() << ' ' << tank_rect.right() << ' ' 
-			<< tank_rect.top() << ' ' << tank_rect.bottom() << endl;
-		cout << left << ' ' << top << ',' << right << ' ' << top << endl;
-		cout << left << ' ' << bottom << ',' << right << ' ' << bottom << endl;
-		cout << a11 << a12 << endl;
-		cout << a21 << a22 << endl;
-		*/
-		return true;
+		if (this->hitRect(*it))
+			return true;
+	}
+	rect_list steels = tankWindow->getSteels();
+	for (rect_it it = steels.begin();it != steels.end();++it)
+	{
+		if (this->hitRect(*it))
+			return true;
 	}
 	return false;
 
+}
+
+bool Tank::hitOtherTank()
+{
+	enemy_list enemies = tankWindow->getEnemies();
+	for (enemy_it it = enemies.begin();it != enemies.end();++it)
+	{
+		if (*it != this && (*it)-> isAlive()
+				&& (*it)->hitRect(getTankRect()))
+			return true;
+	}
+	return false;
+}
+
+bool Tank::outOfMap()
+{
+	return getTankRect().left()<0 ||
+		getTankRect().right() > pic_width* map_width ||
+		getTankRect().top() <0 ||
+		getTankRect().bottom() > pic_height * map_height;
 }
 
 bool Tank::isAlive()
@@ -154,13 +173,12 @@ bool Tank::isAlive()
 void Tank::kill()
 {
 	alive = false;
+	blast = new Blast(getTankRect());
 }
 
 
 void Tank::drawTank(QPainter &painter)
 {
-	if (!alive)
-		return;
 	QImage tank;
 	switch(dir)
 	{
@@ -179,12 +197,24 @@ void Tank::drawTank(QPainter &painter)
 	default:
 		return;
 	}
-	painter.drawImage(position, tank);
+	drawTankPict(painter, tank);
+}
+
+void Tank::drawTankPict(QPainter &painter, QImage& tank)
+{
+	if (!alive)
+	{
+		blast->drawBlast(painter);
+	}
+	else
+	{
+		painter.drawImage(position, tank);
+	}
 }
 	
 QRect Tank::getTankRect()
 {
-	return QRect(position.x(), position.y(), pic_width, pic_height);
+	return QRect(position.x(), position.y(), pic_width-1, pic_height-1);
 }
 
 void Tank::undo()

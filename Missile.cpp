@@ -42,7 +42,7 @@ void Missile::kill()
 	alive = false;
 }
 
-bool Missile::hitRect(QRect& rect)
+bool Missile::hitRect(const QRect& rect)
 {
 	QRect missile_rect(position.x(), position.y(),
 					missile_width, missile_height);

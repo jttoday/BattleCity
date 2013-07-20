@@ -16,7 +16,7 @@ public:
 	bool isAlive();
 	void kill();
 
-	bool hitRect(QRect& rect);
+	bool hitRect(const QRect& rect);
 
 	bool outOfMap();
 
