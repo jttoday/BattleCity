@@ -10,9 +10,10 @@ using namespace std;
 
 extern Map::map firstMap;
 
-Tank::Tank(QPoint startPoint, TankWindow *tankWindow,
-		Direction::Direction dir)
+Tank::Tank(QPoint startPoint, TankWindow *tankWindow, 
+		const TankType& type, Direction::Direction dir)
 {
+	this->name = type.name;
 	position = startPoint;
 	this -> dir= dir;
 	this -> tankWindow = tankWindow;
@@ -188,16 +189,16 @@ void Tank::drawTank(QPainter &painter)
 	switch(dir)
 	{
 	case Direction::left:
-		tank.load(":/image/small/p1tankL.gif");
+		tank.load(QString(":/image/small/%1L.gif").arg(name));
 		break;
 	case Direction::right:
-		tank.load(":/image/small/p1tankR.gif");
+		tank.load(QString(":/image/small/%1R.gif").arg(name));
 		break;
 	case Direction::up:
-		tank.load(":/image/small/p1tankU.gif");
+		tank.load(QString(":/image/small/%1U.gif").arg(name));
 		break;
 	case Direction::down:
-		tank.load(":/image/small/p1tankD.gif");
+		tank.load(QString(":/image/small/%1D.gif").arg(name));
 		break;
 	default:
 		return;

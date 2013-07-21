@@ -8,10 +8,9 @@ class EnemyTank :public Tank
 {
 public:
 	EnemyTank(QPoint startPoint, TankWindow *tankWindow, 
-			Direction::Direction dir= Direction::down);
+			const TankType& name,Direction::Direction dir= Direction::down);
 
 	void randomMove();
-	virtual void drawTank(QPainter &painter);
 
 protected:
 //	virtual void move(Direction::Direction dir);

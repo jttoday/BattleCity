@@ -9,10 +9,18 @@
         <file>image/small/p1tankR.gif</file>
         <file>image/small/p1tankU.gif</file>
         <file>image/small/p1tankD.gif</file>
+        <file>image/small/p2tankL.gif</file>
+        <file>image/small/p2tankR.gif</file>
+        <file>image/small/p2tankU.gif</file>
+        <file>image/small/p2tankD.gif</file>
         <file>image/small/enemy1L.gif</file>
         <file>image/small/enemy1R.gif</file>
         <file>image/small/enemy1U.gif</file>
         <file>image/small/enemy1D.gif</file>
+        <file>image/small/enemy2L.gif</file>
+        <file>image/small/enemy2R.gif</file>
+        <file>image/small/enemy2U.gif</file>
+        <file>image/small/enemy2D.gif</file>
         <file>image/small/missile1.gif</file>
         <file>image/small/gameOver.gif</file>
         <file>image/small/blast1.gif</file>

@@ -3,6 +3,7 @@
 
 #include "TankConst.h"
 #include <QPoint>
+#include <QString>
 class QPainter;
 class QKeyEvent;
 class QRect;
@@ -15,7 +16,7 @@ class Tank
 {
 public:
 	Tank(QPoint startPoint, TankWindow *tankWindow, 
-			Direction::Direction dir= Direction::up);
+			const TankType& type,Direction::Direction dir= Direction::up);
 	virtual ~Tank();
 	/* move	 */
 	void moveUp();
@@ -28,7 +29,7 @@ public:
 	bool isAlive();
 	void kill();
 	/* draw itself */
-	virtual	void drawTank(QPainter &painter);
+	void drawTank(QPainter &painter);
 
 	/* get the rect where tank is */
 	QRect getTankRect();
@@ -56,7 +57,7 @@ protected:
 	/* Tank direction */
 	Direction::Direction dir;
 private:
-	
+	QString name;
 	QPoint position;
 	QPoint old_position;
 	TankWindow *tankWindow;

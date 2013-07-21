@@ -36,12 +36,10 @@ void TankWindow::startGame()
 {
 	clearMap();
 	loadMap();
-	player1 = new Tank(startPoints[3], this);
+	player1 = new Tank(startPoints[3], this,p1tank);
 	if (playerNumber == 2)
-		player2 = new Tank(startPoints[4], this);
-	enemies.push_back(new EnemyTank(startPoints[0], this));
-	enemies.push_back(new EnemyTank(startPoints[1], this));
-	enemies.push_back(new EnemyTank(startPoints[2], this));
+		player2 = new Tank(startPoints[4], this, p2tank);
+	enemies.push_back(new EnemyTank(startPoints[0], this, regular_tank));
 	missileTimer = startTimer(30);
 	enemyTimer = startTimer(250);
 	produceTimer = startTimer(3000);
@@ -142,7 +140,7 @@ void TankWindow::addEnemy()
 	if (enemies.size() == max_enemy-1)
 		return;
 	QPoint p = startPoints[rand() % 3];	
-	enemies.push_back(new EnemyTank(p, this));
+	enemies.push_back(new EnemyTank(p, this, fast_tank));
 }
 
 void TankWindow::clearMissile()

@@ -4,6 +4,7 @@
 #include <QPoint>
 #include <vector>
 #include <QRect>
+#include "TankType.h"
 const int map_width = 13;
 const int map_height = 13;
 const int tank_speed = 15;
@@ -65,5 +66,11 @@ const map firstMap = {
 };
 
 }
+
+/* different types of tanks */
+const TankType p1tank("p1tank", tank_speed);
+const TankType p2tank("p2tank", tank_speed);
+const TankType regular_tank("enemy1", tank_speed);
+const TankType fast_tank("enemy2", tank_speed*2);
 
 #endif

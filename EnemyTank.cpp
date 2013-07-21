@@ -8,9 +8,9 @@
 
 
 EnemyTank::EnemyTank(QPoint startPoint, TankWindow *tankWindow, 
-			Direction::Direction dir)
+			const TankType& name, Direction::Direction dir)
 	/* Call base constructor first */
-	:Tank(startPoint, tankWindow,dir),
+	:Tank(startPoint, tankWindow,name, dir),
 	 steps(max_enemy_step)
 {
 	srand(time(NULL));
@@ -52,27 +52,5 @@ void EnemyTank::changeDir()
 	}
 }
 
-void EnemyTank::drawTank(QPainter &painter)
-{
-	QImage tank;
-	switch(dir)
-	{
-	case Direction::left:
-		tank.load(":/image/small/enemy1L.gif");
-		break;
-	case Direction::right:
-		tank.load(":/image/small/enemy1R.gif");
-		break;
-	case Direction::up:
-		tank.load(":/image/small/enemy1U.gif");
-		break;
-	case Direction::down:
-		tank.load(":/image/small/enemy1D.gif");
-		break;
-	default:
-		return;
-	}
-	drawTankPict(painter, tank);
-}
 
 
