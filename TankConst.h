@@ -16,7 +16,8 @@ const int tank_height = 30;
 const int missile_width = 8;
 const int missile_height = 8;
 const int max_enemy_step = 9; 
-const int max_enemy = 50;
+const int max_enemy = 20;
+const int max_life = 4;
 
 class QRect;
 class EnemyTank;

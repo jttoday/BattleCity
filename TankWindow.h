@@ -47,6 +47,9 @@ private:
 	/* draw start menu */
 	void drawChoose(QPainter &painter);
 
+	/* draw info board */
+	void drawInfo(QPainter &painter);
+
 	/* draw wall, steel, and grass */
 	void drawWall(QPainter &painter);
 	void drawSteel(QPainter &painter);

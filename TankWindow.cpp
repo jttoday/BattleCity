@@ -10,6 +10,7 @@
 #include <QRect>
 #include <vector>
 #include <QDebug>
+#include <QTextOption>
 
 #define DEBUGx
 #ifdef DEBUG
@@ -20,7 +21,7 @@ using namespace std;
 TankWindow::TankWindow()
 {
 	choosing = true;
-	setFixedSize(pic_width*map_width, pic_height*map_height);
+	setFixedSize(pic_width*(map_width+2), pic_height*map_height);
 	srand(time(NULL));
 	player1 = NULL;
 	player2 = NULL;
@@ -438,22 +439,37 @@ void TankWindow::drawChoose(QPainter &painter)
 		/* draw logo */
 		pic.load(":image/small/logo.gif");
 		QImage logo = pic;
-		QPoint t(-320,-180);
+		QPoint t(-300,-180);
 		painter.drawImage(t, pic);
 
 		/* draw select */
 		pic.load(":image/small/select.png");
 		QImage select = pic.scaled(8*pic_width
 				, 2.7*pic_height);
-		QPoint p(2.3*pic_width, 7*pic_height);
+		QPoint p(2.8*pic_width, 7*pic_height);
 		painter.drawImage(p, select);
 
 		/* draw small tank */
 		pic.load(":image/small/selecttank.gif");
 		int height = (6.5+playerNumber)*pic_height;
 		p.setY(height);
-		p.setX(1.7*pic_width);
+		p.setX(2.2*pic_width);
 		painter.drawImage(p, pic);
+}
+
+void TankWindow::drawInfo(QPainter &painter)
+{
+	/* back ground */
+	QRect infoBackground(pic_width*map_width, 0, 
+						pic_width*(map_width+2), pic_height*map_height);
+	painter.fillRect(infoBackground, Qt::gray);
+	painter.setFont(QFont("Arial Black", 30));
+	/* enemy info */
+	QPoint p(pic_width*map_width+4, 40);
+	int rem = max_enemy - enemies.size();
+	painter.drawText(p, QString("%1").arg(rem));
+	
+
 }
 
 
@@ -498,6 +514,9 @@ void TankWindow::paintEvent(QPaintEvent *)
 
 	/* draw grass */
 	drawGrass(painter);
+
+	/* draw inform */
+	drawInfo(painter);
 
 	/* if lose draw game over*/
 	if (lose)
