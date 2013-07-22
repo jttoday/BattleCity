@@ -3,6 +3,7 @@
 #include "EnemyTank.h"
 #include "Missile.h"
 #include "Blast.h"
+#include "MapElement.h"
 #include <stdlib.h>
 #include <time.h>
 #include <QtGui>
@@ -19,6 +20,7 @@ using namespace std;
 #endif
 
 TankWindow::TankWindow()
+	:walls("walls"), steels("steels"), grasses("grasses")
 {
 	choosing = true;
 	setFixedSize(pic_width*(map_width+2), pic_height*map_height);
@@ -66,17 +68,17 @@ void TankWindow::loadMap()
 			if (current_map[j][i]==Map::wall)
 			{
 				QPoint p(pic_width*j, pic_height*i);
-				addWall(p);
+				walls.add(p);
 			}
 			else if (current_map[j][i] == Map::steel)
 			{
 				QPoint p(pic_width*j, pic_height*i);
-				addSteel(p);
+				steels.add(p);
 			}
 			else if (current_map[j][i] == Map::grass)
 			{
 				QPoint p(pic_width*j, pic_height*i);
-				addGrass(p);
+				grasses.add(p);
 			}
 			else if (current_map[j][i] == Map::symbol)
 			{
@@ -101,39 +103,6 @@ void TankWindow::userLose()
 	clearEnemy();
 	lose = true;
 	repaint();
-}
-
-rect_list& TankWindow::getWalls()
-{
-	return walls;
-}
-
-rect_list& TankWindow::getSteels()
-{
-	return steels;
-}
-
-enemy_list& TankWindow::getEnemies()
-{
-	return enemies;
-}
-
-void TankWindow::addWall(QPoint p)
-{
-	QRect wall(p.x(), p.y(), pic_width, pic_height);
-	walls.push_back(wall);
-}
-
-void TankWindow::addSteel(QPoint p)
-{
-	QRect steel(p.x(), p.y(), pic_width, pic_height);
-	steels.push_back(steel);
-}
-
-void TankWindow::addGrass(QPoint p)
-{
-	QRect grass(p.x(), p.y(), pic_width, pic_height);
-	grasses.push_back(grass);
 }
 
 void TankWindow::addEnemy()
@@ -189,6 +158,10 @@ Tank* TankWindow::killPlayer(Tank* player)
 }
 
 
+bool TankWindow::hitBarrier(const QRect& rect)
+{
+	return walls.hit(rect) || steels.hit(rect);
+}
 
 int TankWindow::getMap(int x, int y)
 {
@@ -249,27 +222,21 @@ void TankWindow::moveMissile()
 			break;
 		}
 		/* Do missiles hit wall ? */
-		for (std::list<QRect>::iterator wit=walls.begin();
-				wit != walls.end(); ++wit)
-			if ((*it) -> hitRect(*wit))
-			{
-				live = false;
-				it = missiles.erase(it);
-				int x = wit->left() / pic_width;
-				int y = wit->top() / pic_height;
-				current_map[x][y] = 0;
-				walls.erase(wit);
-				break; // break 'wall' loop
-			}
+		if (walls.hitAndErase((*it)->getRect()))
+		{
+			live = false;
+			it = missiles.erase(it);
+			if (it == missiles.end())
+				break;
+		}
 		/* Do missiles hit steel? */
-		for (std::list<QRect>::iterator sit=steels.begin();
-				sit != steels.end(); ++sit)
-			if ((*it) -> hitRect(*sit))
-			{
-				live = false;
-				it = missiles.erase(it);
-				break; // break 'steel' loop
-			}
+		if (steels.hit((*it)->getRect()))
+		{
+			live = false;
+			it = missiles.erase(it);
+			if (it == missiles.end())
+				break;
+		}
 
 		/* Do missiles hit player1? */
 		if (player1 != NULL && 
@@ -397,41 +364,12 @@ out:
 }
 
 
-void TankWindow::drawWall(QPainter &painter)
-{
-	QImage wall;
-	wall.load(":image/small/walls.gif");
-	drawRects(painter, wall, walls);
-}
-
-void TankWindow::drawSteel(QPainter &painter)
-{
-	QImage steel;
-	steel.load(":image/small/steels.gif");
-	drawRects(painter, steel, steels);
-}
-
-void TankWindow::drawGrass(QPainter &painter)
-{
-	QImage grass;
-	grass.load(":image/small/grass.gif");
-	drawRects(painter, grass, grasses);
-}
-
 void TankWindow::drawSymbol(QPainter &painter)
 {
 	QImage symbol(":image/small/symbol.gif");
 	painter.fillRect(symbolRect, symbol);
 }
 
-void TankWindow::drawRects(QPainter &painter, const QImage& image,
-							rect_list& rects)
-{
-	for (rect_it it = rects.begin(); it!= rects.end();++it)
-	{
-		painter.fillRect(*it, image);
-	}
-}
 
 void TankWindow::drawChoose(QPainter &painter)
 {
@@ -468,10 +406,7 @@ void TankWindow::drawInfo(QPainter &painter)
 	QPoint p(pic_width*map_width+4, 40);
 	int rem = max_enemy - enemies.size();
 	painter.drawText(p, QString("%1").arg(rem));
-	
-
 }
-
 
 void TankWindow::paintEvent(QPaintEvent *)
 {
@@ -489,8 +424,8 @@ void TankWindow::paintEvent(QPaintEvent *)
 	/* draw symbol */
 	drawSymbol(painter);
 	/* draw wall and steel */
-	drawWall(painter);
-	drawSteel(painter);
+	walls.draw(painter);
+	steels.draw(painter);
 	/* drawEnemy */
 	for (std::list<EnemyTank*>::iterator it = enemies.begin();
 			it != enemies.end();++it)
@@ -513,7 +448,7 @@ void TankWindow::paintEvent(QPaintEvent *)
 		player2->drawTank(painter);
 
 	/* draw grass */
-	drawGrass(painter);
+	grasses.draw(painter);
 
 	/* draw inform */
 	drawInfo(painter);

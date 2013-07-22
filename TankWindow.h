@@ -7,6 +7,7 @@
 #include <QImage>
 #include "TankConst.h"
 #include "Blast.h"
+#include "MapElement.h"
 
 
 class Missile;
@@ -23,6 +24,7 @@ public:
 	TankWindow();
 	int getMap(int x, int y);
 	void addMissile(Missile * missile);
+	bool hitBarrier(const QRect& rect);
 	rect_list& getWalls();
 	rect_list& getSteels();
 	enemy_list& getEnemies();
@@ -40,9 +42,6 @@ private:
 	/* user lose game */
 	void userLose();
 	
-	void addWall(QPoint p);
-	void addSteel(QPoint p);
-	void addGrass(QPoint p);
 	void addEnemy();
 	/* draw start menu */
 	void drawChoose(QPainter &painter);
@@ -50,17 +49,10 @@ private:
 	/* draw info board */
 	void drawInfo(QPainter &painter);
 
-	/* draw wall, steel, and grass */
-	void drawWall(QPainter &painter);
-	void drawSteel(QPainter &painter);
-	void drawGrass(QPainter &painter);
 
+	/* draw Symbol */
 	void drawSymbol(QPainter& painter);
 
-
-	/* helper method to draw */
-	void drawRects(QPainter &painter, const QImage& image, 
-						 rect_list& rects);
 
 	/* move enemies */
 	void moveEnemy();
@@ -96,14 +88,15 @@ private:
 	/* 1p or 2p */
 	int playerNumber;
 
+	/* Map Elements */
+	MapElement walls;
+	MapElement steels;
+	MapElement grasses;
+
 	/* live enemy tanks */
 	enemy_list enemies;
 	/* all live missiles */
 	missile_list missiles;
-	/* list of walls and steels and grass */
-	rect_list walls;
-	rect_list steels;
-	rect_list grasses;
 	/* vector of enemy start points */
 	point_vector startPoints;
 

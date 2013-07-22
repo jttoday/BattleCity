@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>image/small/plain.gif</file>
-        <file>image/small/grass.gif</file>
+        <file>image/small/grasses.gif</file>
         <file>image/small/walls.gif</file>
         <file>image/small/steels.gif</file>
         <file>image/small/symbol.gif</file>

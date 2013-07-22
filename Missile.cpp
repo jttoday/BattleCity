@@ -4,8 +4,11 @@
 
 Missile::Missile(QPoint startPoint, Direction::Direction dir,
 			TankWindow *tankWindow)
+    :position(startPoint),
+	 missile_rect(position.x(), position.y(),
+					missile_width, missile_height)
+	
 {
-	position = startPoint;
 	this->dir = dir;
 	this->tankWindow = tankWindow;
 	alive = true;
@@ -30,6 +33,7 @@ void Missile::move()
 	default:
 		break;
 	}
+	missile_rect.moveTo(position);
 }
 
 bool Missile::isAlive()
@@ -44,10 +48,12 @@ void Missile::kill()
 
 bool Missile::hitRect(const QRect& rect)
 {
-	QRect missile_rect(position.x(), position.y(),
-					missile_width, missile_height);
 	return missile_rect.intersects(rect);
+}
 
+QRect& Missile::getRect()
+{
+	return missile_rect;
 }
 
 bool Missile::outOfMap()

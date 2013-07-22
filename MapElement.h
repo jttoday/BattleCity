@@ -1,12 +1,15 @@
 #ifndef MAPELEMENTH_GUARD
 #define MAPELEMENTH_GUARD
+#include <QPainter>
+#include <QString>
+#include "TankConst.h"
 
 
 class MapElement{
 public:
-	
-
-
+	MapElement(const QString& name){
+		this->name = name;
+	}
 
 	void add(const QPoint& p) {
 		QRect rect(p.x(), p.y(), pic_width, pic_height);
@@ -17,9 +20,12 @@ public:
 		rects.clear();
 	}
 
-	rect_list& getRects() {
-		return rects;
-	}
+	bool hit(const QRect& rect);
+	
+	bool hitAndErase(const QRect& rect);
+
+	void draw(QPainter& painter);
+
 	
 private:
 	QString name;

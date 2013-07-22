@@ -131,21 +131,7 @@ bool Tank::hitRect(const QRect& rect)
 
 bool Tank::hitBarrier()
 {
-	rect_list walls = tankWindow->getWalls();
-
-	for (rect_it it = walls.begin();it != walls.end();++it)
-	{
-		if (this->hitRect(*it))
-			return true;
-	}
-	rect_list steels = tankWindow->getSteels();
-	for (rect_it it = steels.begin();it != steels.end();++it)
-	{
-		if (this->hitRect(*it))
-			return true;
-	}
-	return false;
-
+	return tankWindow->hitBarrier(getTankRect());
 }
 
 bool Tank::hitOtherTank()

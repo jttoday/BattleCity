@@ -20,10 +20,13 @@ public:
 
 	bool outOfMap();
 
+	QRect& getRect();
+
 
 	void drawMissile(QPainter &painter);
 private:
 	QPoint position;
+	QRect missile_rect;
 	Direction::Direction dir;
 
 	TankWindow* tankWindow;
