@@ -27,7 +27,7 @@ public:
 	void shoot();  
 	/* is it alive? */
 	bool isAlive();
-	void kill();
+	virtual void kill();
 	/* draw itself */
 	void drawTank(QPainter &painter);
 

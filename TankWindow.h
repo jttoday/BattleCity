@@ -14,6 +14,7 @@ class Missile;
 class Tank;
 class QRect;
 class EnemyTank;
+class PlayerTank;
 class QPoint;
 
 class TankWindow :public QMainWindow
@@ -35,8 +36,6 @@ protected:
 private:
 
 	void startGame(); 
-	/* choose game type ie:1p or 2p */
-	int chooseType();
 
 	void loadMap();
 	/* user lose game */
@@ -69,13 +68,13 @@ private:
 	/* kill a tank */
 	void killTank(Tank* tank);
 	/* kill a player */
-	Tank* killPlayer(Tank* player);
+	PlayerTank* killPlayer(PlayerTank* player, int n);
 	
 
 	bool isChoosing();
 
 	Map::map current_map;
-	Tank *player1, *player2;
+	PlayerTank *player1, *player2;
 
 	/* timers */
 	int missileTimer;
@@ -87,6 +86,9 @@ private:
 	bool choosing;
 	/* 1p or 2p */
 	int playerNumber;
+	/* player's life */
+	int p1life;
+	int p2life;
 
 	/* Map Elements */
 	MapElement walls;

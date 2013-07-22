@@ -1,5 +1,6 @@
 #include "TankWindow.h"
 #include "Tank.h"
+#include "PlayerTank.h"
 #include "EnemyTank.h"
 #include "Missile.h"
 #include "Blast.h"
@@ -39,20 +40,23 @@ void TankWindow::startGame()
 {
 	clearMap();
 	loadMap();
-	player1 = new Tank(startPoints[3], this,p1tank);
+	/* add players */
+	player1 = new PlayerTank(startPoints[3], this,p1tank);
+	p1life = max_life;
 	if (playerNumber == 2)
-		player2 = new Tank(startPoints[4], this, p2tank);
-	enemies.push_back(new EnemyTank(startPoints[0], this, regular_tank));
+	{
+		player2 = new PlayerTank(startPoints[4], this, p2tank);
+		p2life = max_life;
+	}
+	/* add enemies */
+	addEnemy();
+	/* add timers */
 	missileTimer = startTimer(30);
 	enemyTimer = startTimer(250);
 	produceTimer = startTimer(3000);
 	lose = false;
 }
 
-int TankWindow::chooseType()
-{
-	return 0;
-}
 
 bool TankWindow::isChoosing()
 {
@@ -107,7 +111,7 @@ void TankWindow::userLose()
 
 void TankWindow::addEnemy()
 {
-	if (enemies.size() == max_enemy-1)
+	if (enemies.size() == max_enemy)
 		return;
 	QPoint p = startPoints[rand() % 3];	
 	enemies.push_back(new EnemyTank(p, this, fast_tank));
@@ -145,7 +149,7 @@ void TankWindow::killTank(Tank* tank)
 	tank->kill();
 }
 
-Tank* TankWindow::killPlayer(Tank* player)
+PlayerTank* TankWindow::killPlayer(PlayerTank* player, int n)
 {
 	if (player == NULL)
 	{
@@ -154,7 +158,25 @@ Tank* TankWindow::killPlayer(Tank* player)
 	}
 	killTank(player);
 	delete player;
-	return NULL;
+
+	QPoint p;
+	const TankType* t;
+	p = startPoints[2+n];
+	
+	if (n == 1)
+	{
+		if (p1life-- == 0)
+			return NULL;
+		t = &p1tank;
+	}
+	else
+	{
+		if (p2life-- == 0)
+			return NULL;
+		t = &p2tank;
+	}
+
+	return new PlayerTank(p ,this, *t);
 }
 
 
@@ -215,9 +237,9 @@ void TankWindow::moveMissile()
 		/* Do missiles hit symbol ? */
 		if ((*it) -> hitRect(symbolRect)){
 			if (player1 != NULL)
-				player1 = killPlayer(player1);
+				player1 = killPlayer(player1, 1);
 			if (player2 != NULL)
-				player2 = killPlayer(player2);
+				player2 = killPlayer(player2, 2);
 			userLose();
 			break;
 		}
@@ -242,8 +264,8 @@ void TankWindow::moveMissile()
 		if (player1 != NULL && 
 				(*it)-> hitRect(player1->getTankRect())) 
 		{
-			player1 = killPlayer(player1);
-			if (player2 == NULL)
+			player1 = killPlayer(player1, 1);
+			if (player1 == NULL && player2 == NULL)
 				userLose();
 			break;
 		}
@@ -251,8 +273,8 @@ void TankWindow::moveMissile()
 		if (player2 != NULL && 
 				(*it)-> hitRect(player2->getTankRect())) 
 		{
-			player2 = killPlayer(player2);
-			if (player1 == NULL)
+			player2 = killPlayer(player2, 2);
+			if (player1 == NULL && player2 == NULL)
 				userLose();
 			break;
 		}
