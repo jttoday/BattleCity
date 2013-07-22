@@ -3,15 +3,20 @@
 #include <QPainter>
 
 Missile::Missile(QPoint startPoint, Direction::Direction dir,
-			TankWindow *tankWindow)
+			Tank* tank)
     :position(startPoint),
 	 missile_rect(position.x(), position.y(),
 					missile_width, missile_height)
 	
 {
 	this->dir = dir;
-	this->tankWindow = tankWindow;
+	this->tank = tank;
 	alive = true;
+}
+
+Missile::~Missile()
+{
+	tank->downMissile();
 }
 
 void Missile::move()

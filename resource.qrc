@@ -22,6 +22,10 @@
         <file>image/small/enemy2R.gif</file>
         <file>image/small/enemy2U.gif</file>
         <file>image/small/enemy2D.gif</file>
+        <file>image/small/enemy3L.gif</file>
+        <file>image/small/enemy3R.gif</file>
+        <file>image/small/enemy3U.gif</file>
+        <file>image/small/enemy3D.gif</file>
         <file>image/small/missile1.gif</file>
         <file>image/small/gameOver.gif</file>
         <file>image/small/blast1.gif</file>

@@ -14,10 +14,13 @@ Tank::Tank(QPoint startPoint, TankWindow *tankWindow,
 		const TankType& type, Direction::Direction dir)
 {
 	this->name = type.name;
+	this->speed = type.speed;
+	this->max_missile = type.missile;
 	position = startPoint;
 	this -> dir= dir;
 	this -> tankWindow = tankWindow;
 	alive = true;
+	missile_num = 0;
 }
 
 Tank::~Tank()
@@ -54,16 +57,16 @@ bool Tank::move(Direction::Direction dir)
 	switch (dir)
 	{
 	case Direction::up:
-		position.setY(position.y() - tank_speed);
+		position.setY(position.y() - speed);
 		break;
 	case Direction::down:
-		position.setY(position.y() + tank_speed);
+		position.setY(position.y() + speed);
 		break;
 	case Direction::left:
-		position.setX(position.x() - tank_speed);
+		position.setX(position.x() - speed);
 		break;
 	case Direction::right:
-		position.setX(position.x() + tank_speed);
+		position.setX(position.x() + speed);
 		break;
 	default:
 		break;
@@ -91,8 +94,9 @@ bool Tank::move()
  */
 void Tank::shoot()
 {
-	if (!alive)
+	if (!alive || missile_num >= max_missile)
 		return;
+	missile_num++;
 	QPoint missilePoint;
 	int x = position.x();
 	int y = position.y();
@@ -119,8 +123,13 @@ void Tank::shoot()
 		break;
 	}
 	Missile *missile = new Missile(missilePoint, 
-			dir, tankWindow);
+			dir, this);
 	tankWindow->addMissile(missile);
+}
+
+void Tank::downMissile()
+{
+	missile_num -- ;
 }
 
 bool Tank::hitRect(const QRect& rect)

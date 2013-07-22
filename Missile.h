@@ -9,8 +9,9 @@
 class Missile {
 public:
 	Missile(QPoint startPoint, Direction::Direction dir,
-			TankWindow *tankWindow);
+			Tank *tank);
 	/* notice: missile cannot change direction */
+	~Missile();
 	void move();
 
 	bool isAlive();
@@ -30,6 +31,7 @@ private:
 	Direction::Direction dir;
 
 	TankWindow* tankWindow;
+	Tank* tank;
 
 	bool alive;
 };

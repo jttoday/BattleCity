@@ -124,7 +124,12 @@ void TankWindow::addEnemy()
 	if (enemies.size() == max_enemy)
 		return;
 	QPoint p = startPoints[rand() % 3];	
-	enemies.push_back(new EnemyTank(p, this, fast_tank));
+	const TankType *t;
+	int n = rand() % 3;
+	if (n == 0) t = &regular_tank;
+	else if (n == 1) t = &fast_tank;
+	else t = &heavy_tank;
+	enemies.push_back(new EnemyTank(p, this, *t));
 }
 
 void TankWindow::clearMissile()
@@ -258,6 +263,7 @@ void TankWindow::moveMissile()
 		if (walls.hitAndErase((*it)->getRect()))
 		{
 			live = false;
+			delete *it;
 			it = missiles.erase(it);
 		}
 		if (it == missiles.end())
@@ -266,6 +272,7 @@ void TankWindow::moveMissile()
 		if (steels.hit((*it)->getRect()))
 		{
 			live = false;
+			delete *it;
 			it = missiles.erase(it);
 		}
 		if (it == missiles.end())
@@ -281,6 +288,7 @@ void TankWindow::moveMissile()
 				userLose();
 				return;
 			}
+			delete *it;
 			it = missiles.erase(it);
 		}
 		if (it == missiles.end())
@@ -295,6 +303,7 @@ void TankWindow::moveMissile()
 				userLose();
 				return;
 			}
+			delete *it;
 			it = missiles.erase(it);
 		}
 		if (it == missiles.end())
@@ -306,6 +315,7 @@ void TankWindow::moveMissile()
 			if ((*eit)->isAlive() &&
 					(*it)-> hitRect((*eit)->getTankRect()))
 			{
+				delete *it;
 				it = missiles.erase(it);
 				killTank(*eit);
 				live = false;
@@ -325,6 +335,7 @@ void TankWindow::moveMissile()
 		if (live && (*it)->outOfMap())
 		{
 			live = false;
+			delete *it;
 			it = missiles.erase(it);
 		}
 		if (live) it++;

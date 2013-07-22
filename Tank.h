@@ -25,6 +25,8 @@ public:
 	void moveRight();
 	/* shoot missiles */
 	void shoot();  
+	/* called when its missle died */
+	void downMissile();
 	/* is it alive? */
 	bool isAlive();
 	virtual void kill();
@@ -56,14 +58,21 @@ protected:
 	
 	/* Tank direction */
 	Direction::Direction dir;
-private:
+
 	QString name;
+
+	/* how many missiles can a tank have */
+	int max_missile;
+	/* missile  number */
+	int missile_num;
+private:
 	QPoint position;
 	QPoint old_position;
 	TankWindow *tankWindow;
 	Blast* blast;
 
 
+	int speed;
 	bool hitBarrier();
 	bool outOfMap();
 	bool alive;

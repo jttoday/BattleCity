@@ -4,6 +4,7 @@
 #include <QPoint>
 #include <vector>
 #include <QRect>
+#include <QDebug>
 #include "TankType.h"
 const int map_width = 13;
 const int map_height = 13;
@@ -16,8 +17,8 @@ const int tank_height = 30;
 const int missile_width = 8;
 const int missile_height = 8;
 const int max_enemy_step = 9; 
-const unsigned max_enemy = 0;
-const unsigned max_life = 1;
+const unsigned max_enemy = 20;
+const unsigned max_life = 4;
 
 class QRect;
 class EnemyTank;
@@ -70,9 +71,10 @@ const map firstMap = {
 }
 
 /* different types of tanks */
-const TankType p1tank("p1tank", tank_speed);
-const TankType p2tank("p2tank", tank_speed);
-const TankType regular_tank("enemy1", tank_speed);
-const TankType fast_tank("enemy2", tank_speed*2);
+const TankType p1tank("p1tank", tank_speed, 3);
+const TankType p2tank("p2tank", tank_speed, 3);
+const TankType regular_tank("enemy1", tank_speed, 3);
+const TankType fast_tank("enemy2", tank_speed*2, 3);
+const TankType heavy_tank("enemy3", tank_speed, 5);
 
 #endif
