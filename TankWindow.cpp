@@ -14,14 +14,9 @@
 #include <QDebug>
 #include <QTextOption>
 
-#define DEBUGx
-#ifdef DEBUG
-#include <iostream>
-using namespace std;
-#endif
-
 TankWindow::TankWindow()
-	:walls("walls"), steels("steels"), grasses("grasses")
+	:walls("walls"), steels("steels"), grasses("grasses"),
+	 waters("waters")
 {
 	choosing = true;
 	setFixedSize(pic_width*(map_width+2), pic_height*map_height);
@@ -84,6 +79,11 @@ void TankWindow::loadMap()
 				QPoint p(pic_width*j, pic_height*i);
 				grasses.add(p);
 			}
+			else if (current_map[j][i] == Map::water)
+			{
+				QPoint p(pic_width*j, pic_height*i);
+				waters.add(p);
+			}
 			else if (current_map[j][i] == Map::symbol)
 			{
 				QRect rect(pic_width*j, pic_height*i, 
@@ -105,6 +105,16 @@ void TankWindow::userLose()
 	killTimer(enemyTimer);
 	clearMissile();
 	clearEnemy();
+	if (player1!= NULL)
+	{
+		delete player1;
+		player1 = NULL;
+	}
+	if (player2!= NULL)
+	{
+		delete player2;
+		player2 = NULL;
+	}
 	lose = true;
 	repaint();
 }
@@ -142,6 +152,7 @@ void TankWindow::clearMap()
 	walls.clear();
 	steels.clear();
 	grasses.clear();
+	waters.clear();
 }
 
 void TankWindow::killTank(Tank* tank)
@@ -165,13 +176,13 @@ PlayerTank* TankWindow::killPlayer(PlayerTank* player, int n)
 	
 	if (n == 1)
 	{
-		if (p1life-- == 0)
+		if (--p1life == 0)
 			return NULL;
 		t = &p1tank;
 	}
 	else
 	{
-		if (p2life-- == 0)
+		if (--p2life == 0)
 			return NULL;
 		t = &p2tank;
 	}
@@ -182,7 +193,7 @@ PlayerTank* TankWindow::killPlayer(PlayerTank* player, int n)
 
 bool TankWindow::hitBarrier(const QRect& rect)
 {
-	return walls.hit(rect) || steels.hit(rect);
+	return walls.hit(rect) || steels.hit(rect) || waters.hit(rect);
 }
 
 int TankWindow::getMap(int x, int y)
@@ -248,17 +259,17 @@ void TankWindow::moveMissile()
 		{
 			live = false;
 			it = missiles.erase(it);
-			if (it == missiles.end())
-				break;
 		}
+		if (it == missiles.end())
+			break;
 		/* Do missiles hit steel? */
 		if (steels.hit((*it)->getRect()))
 		{
 			live = false;
 			it = missiles.erase(it);
-			if (it == missiles.end())
-				break;
 		}
+		if (it == missiles.end())
+			break;
 
 		/* Do missiles hit player1? */
 		if (player1 != NULL && 
@@ -266,20 +277,28 @@ void TankWindow::moveMissile()
 		{
 			player1 = killPlayer(player1, 1);
 			if (player1 == NULL && player2 == NULL)
+			{
 				userLose();
-			break;
+				return;
+			}
+			it = missiles.erase(it);
 		}
+		if (it == missiles.end())
+			break;
 		/* Do missiles hit player2? */
 		if (player2 != NULL && 
 				(*it)-> hitRect(player2->getTankRect())) 
 		{
 			player2 = killPlayer(player2, 2);
 			if (player1 == NULL && player2 == NULL)
+			{
 				userLose();
-			break;
+				return;
+			}
+			it = missiles.erase(it);
 		}
-
-
+		if (it == missiles.end())
+			break;
 		/* Do missiles hit enemies? */
 		std::list<EnemyTank*>::iterator eit = enemies.begin();
 		while (eit != enemies.end())
@@ -297,6 +316,10 @@ void TankWindow::moveMissile()
 				++eit;
 			}
 		}
+
+		if (it == missiles.end())
+			break;
+
 
 
 		if (live && (*it)->outOfMap())
@@ -379,7 +402,7 @@ p2:
 		break;
 	}
 out:
-	if (isRestart)
+	if (player1 == NULL && player2 == NULL && isRestart)
 		choosing = true;
 	repaint();
 
@@ -428,6 +451,16 @@ void TankWindow::drawInfo(QPainter &painter)
 	QPoint p(pic_width*map_width+4, 40);
 	int rem = max_enemy - enemies.size();
 	painter.drawText(p, QString("%1").arg(rem));
+	p.setY(200);
+	painter.drawText(p, QString("p1"));
+	p.setY(250);
+	painter.drawText(p, QString("%1").arg(p1life));
+	if (playerNumber == 1)
+		return;
+	p.setY(300);
+	painter.drawText(p, QString("p2"));
+	p.setY(350);
+	painter.drawText(p, QString("%1").arg(p2life));
 }
 
 void TankWindow::paintEvent(QPaintEvent *)
@@ -445,9 +478,10 @@ void TankWindow::paintEvent(QPaintEvent *)
 
 	/* draw symbol */
 	drawSymbol(painter);
-	/* draw wall and steel */
+	/* draw wall and steel and water*/
 	walls.draw(painter);
 	steels.draw(painter);
+	waters.draw(painter);
 	/* drawEnemy */
 	for (std::list<EnemyTank*>::iterator it = enemies.begin();
 			it != enemies.end();++it)

@@ -16,8 +16,8 @@ const int tank_height = 30;
 const int missile_width = 8;
 const int missile_height = 8;
 const int max_enemy_step = 9; 
-const unsigned max_enemy = 20;
-const unsigned max_life = 4;
+const unsigned max_enemy = 0;
+const unsigned max_life = 1;
 
 class QRect;
 class EnemyTank;
@@ -44,6 +44,7 @@ namespace Map{
 	const int wall  = 1;
 	const int steel = 2;
 	const int grass = 3;
+	const int water = 4;
 	const int startPoint = 8;
 	const int symbol = 9;
 
@@ -54,14 +55,14 @@ const map firstMap = {
 	{  8,  0,  0,  1,  0,  0,  8,  0,  0,  0,  0,  0,  8},	//1 
 	{  0,  3,  3,  1,  0,  1,  0,  0,  1,  3,  3,  0,  0},	//2
 	{  2,  3,  3,  0,  0,  0,  3,  1,  0,  3,  0,  1,  3},	//3
-	{  3,  3,  3,  2,  0,  0,  1,  1,  0,  1,  0,  1,  1},	//4
+	{  3,  3,  3,  2,  0,  0,  1,  1,  0,  1,  4,  1,  1},	//4
 	{  3,  3,  3,  0,  0,  3,  3,  1,  0,  1,  0,  1,  1},	//5
-	{  3,  0,  0,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0},	//6
-	{  1,  0,  0,  0,  0,  3,  2,  0,  0,  0,  0,  3,  2},	//7
-	{  1,  3,  0,  3,  3,  1,  1,  1,  0,  1,  0,  0,  1},	//8
+	{  3,  4,  4,  1,  1,  0,  0,  0,  0,  4,  4,  0,  0},	//6
+	{  1,  0,  0,  0,  4,  3,  2,  0,  0,  0,  0,  3,  2},	//7
+	{  1,  3,  0,  3,  3,  1,  1,  1,  0,  1,  4,  0,  1},	//8
 	{  0,  0,  3,  0,  0,  1,  0,  1,  0,  1,  3,  3,  0},	//9
 	{  0,  1,  3,  1,  0,  0,  3,  3,  0,  1,  3,  1,  0},	//10
-	{  3,  1,  3,  1,  0,  0,  0,  0,  0,  1,  0,  1,  0},	//11
+	{  3,  1,  3,  1,  0,  0,  0,  0,  0,  1,  4,  1,  0},	//11
 	{  3,  0,  0,  0,  0,  1,  1,  1,  0,  0,  0,  0,  0},	//12
 	{  0,  3,  0,  0,  8,  1,  9,  1,  8,  0,  0,  0,  0},	//13
 };

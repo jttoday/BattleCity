@@ -94,6 +94,7 @@ private:
 	MapElement walls;
 	MapElement steels;
 	MapElement grasses;
+	MapElement waters;
 
 	/* live enemy tanks */
 	enemy_list enemies;
