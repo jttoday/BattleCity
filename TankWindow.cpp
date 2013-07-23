@@ -280,7 +280,7 @@ void TankWindow::moveMissile()
 
 		/* Do missiles hit player1? */
 		if (player1 != NULL && 
-				(*it)-> hitRect(player1->getTankRect())) 
+				(*it)-> hitRect(player1->getRect())) 
 		{
 			player1 = killPlayer(player1, 1);
 			if (player1 == NULL && player2 == NULL)
@@ -295,7 +295,7 @@ void TankWindow::moveMissile()
 			break;
 		/* Do missiles hit player2? */
 		if (player2 != NULL && 
-				(*it)-> hitRect(player2->getTankRect())) 
+				(*it)-> hitRect(player2->getRect())) 
 		{
 			player2 = killPlayer(player2, 2);
 			if (player1 == NULL && player2 == NULL)
@@ -313,7 +313,7 @@ void TankWindow::moveMissile()
 		while (eit != enemies.end())
 		{
 			if ((*eit)->isAlive() &&
-					(*it)-> hitRect((*eit)->getTankRect()))
+					(*it)-> hitRect((*eit)->getRect()))
 			{
 				delete *it;
 				it = missiles.erase(it);

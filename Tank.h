@@ -2,6 +2,7 @@
 #define TANKH_GUARD
 
 #include "TankConst.h"
+#include "MapObject.h"
 #include <QPoint>
 #include <QString>
 class QPainter;
@@ -12,7 +13,7 @@ class QImage;
 class Blast;
 
 
-class Tank 
+class Tank :public MapObject
 {
 public:
 	Tank(QPoint startPoint, TankWindow *tankWindow, 
@@ -32,9 +33,6 @@ public:
 	virtual void kill();
 	/* draw itself */
 	void drawTank(QPainter &painter);
-
-	/* get the rect where tank is */
-	QRect getTankRect();
 
 	/*  if Tank is not allowed to move */
 	void undo();

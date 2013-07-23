@@ -12,6 +12,7 @@ extern Map::map firstMap;
 
 Tank::Tank(QPoint startPoint, TankWindow *tankWindow, 
 		const TankType& type, Direction::Direction dir)
+	:MapObject(startPoint, pic_width, pic_height)
 {
 	this->name = type.name;
 	this->speed = type.speed;
@@ -72,6 +73,7 @@ bool Tank::move(Direction::Direction dir)
 		break;
 	}
 	this->dir = dir;
+	rect.moveTo(position);
 
 	/* if cannot move to there */
 	if (outOfMap() || hitBarrier() || hitOtherTank())
@@ -135,12 +137,12 @@ void Tank::downMissile()
 bool Tank::hitRect(const QRect& rect)
 {
 
-	return getTankRect().intersects(rect);
+	return getRect().intersects(rect);
 }
 
 bool Tank::hitBarrier()
 {
-	return tankWindow->hitBarrier(getTankRect());
+	return tankWindow->hitBarrier(getRect());
 }
 
 bool Tank::hitOtherTank()
@@ -152,7 +154,7 @@ bool Tank::hitOtherTank()
 	for (enemy_it it = enemies.begin();it != enemies.end();++it)
 	{
 		if (*it != this && (*it)-> isAlive()
-				&& (*it)->hitRect(getTankRect()))
+				&& (*it)->hitRect(getRect()))
 			return true;
 	}
 	return false;
@@ -160,10 +162,10 @@ bool Tank::hitOtherTank()
 
 bool Tank::outOfMap()
 {
-	return getTankRect().left()<0 ||
-		getTankRect().right() > pic_width* map_width ||
-		getTankRect().top() <0 ||
-		getTankRect().bottom() > pic_height * map_height;
+	return getRect().left()<0 ||
+		getRect().right() > pic_width* map_width ||
+		getRect().top() <0 ||
+		getRect().bottom() > pic_height * map_height;
 }
 
 bool Tank::isAlive()
@@ -174,7 +176,7 @@ bool Tank::isAlive()
 void Tank::kill()
 {
 	alive = false;
-	blast = new Blast(getTankRect());
+	blast = new Blast(getRect());
 }
 
 
@@ -213,14 +215,10 @@ void Tank::drawTankPict(QPainter &painter, QImage& tank)
 	}
 }
 	
-QRect Tank::getTankRect()
-{
-	return QRect(position.x(), position.y(), pic_width-1, pic_height-1);
-}
-
 void Tank::undo()
 {
 	position = old_position;
+	rect.moveTo(old_position);
 }
 
 

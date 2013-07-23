@@ -3,9 +3,10 @@
 #include <QPainter>
 #include <QString>
 #include "TankConst.h"
+#include "MapCollection.h"
 
 
-class MapElement{
+class MapElement {
 public:
 	MapElement(const QString& name){
 		this->name = name;
