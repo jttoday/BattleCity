@@ -160,14 +160,6 @@ bool Tank::hitOtherTank()
 	return false;
 }
 
-bool Tank::outOfMap()
-{
-	return getRect().left()<0 ||
-		getRect().right() > pic_width* map_width ||
-		getRect().top() <0 ||
-		getRect().bottom() > pic_height * map_height;
-}
-
 bool Tank::isAlive()
 {
 	return alive;

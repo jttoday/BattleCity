@@ -72,7 +72,6 @@ private:
 
 	int speed;
 	bool hitBarrier();
-	bool outOfMap();
 	bool alive;
 };
 

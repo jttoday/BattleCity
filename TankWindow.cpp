@@ -126,6 +126,8 @@ void TankWindow::addEnemy()
 {
 	if (enemyNumber == max_enemy)
 		return;
+	if (enemies.size() == 4)
+		return;
 	enemyNumber++;
 	QPoint p = startPoints[rand() % 3];	
 	const TankType *t;
