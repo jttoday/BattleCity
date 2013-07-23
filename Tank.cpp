@@ -142,7 +142,7 @@ bool Tank::hitRect(const QRect& rect)
 
 bool Tank::hitBarrier()
 {
-	return tankWindow->hitBarrier(getRect());
+	return tankWindow->hitBarrier(*this);
 }
 
 bool Tank::hitOtherTank()

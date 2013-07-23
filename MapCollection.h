@@ -21,7 +21,10 @@ public:
 	virtual bool hitAndErase(const MapCollection &mp);
 	virtual bool hitAndEraseAndRemove(MapCollection &mp);
 
-	virtual void add(const QPoint& p) = 0;
+	virtual bool checkInMap();
+
+	int size()	{ return objs.size(); }
+	virtual void clear();
 protected:
 	obj_list objs;
 };

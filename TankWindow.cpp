@@ -3,6 +3,7 @@
 #include "PlayerTank.h"
 #include "EnemyTank.h"
 #include "Missile.h"
+#include "Missiles.h"
 #include "Blast.h"
 #include "MapElement.h"
 #include <stdlib.h>
@@ -24,11 +25,12 @@ TankWindow::TankWindow()
 	player1 = NULL;
 	player2 = NULL;
 	playerNumber = 1;
+	enemyNumber = 0;
 }
 
 void TankWindow::addMissile(Missile *missile)
 {
-	missiles.push_back(missile);
+	missiles.add(missile);
 }
 
 void TankWindow::startGame()
@@ -105,6 +107,7 @@ void TankWindow::userLose()
 	killTimer(enemyTimer);
 	clearMissile();
 	clearEnemy();
+	enemyNumber = 0;
 	if (player1!= NULL)
 	{
 		delete player1;
@@ -121,34 +124,25 @@ void TankWindow::userLose()
 
 void TankWindow::addEnemy()
 {
-	if (enemies.size() == max_enemy)
+	if (enemyNumber == max_enemy)
 		return;
+	enemyNumber++;
 	QPoint p = startPoints[rand() % 3];	
 	const TankType *t;
 	int n = rand() % 3;
 	if (n == 0) t = &regular_tank;
 	else if (n == 1) t = &fast_tank;
 	else t = &heavy_tank;
-	enemies.push_back(new EnemyTank(p, this, *t));
+	enemies.add(new EnemyTank(p, this, *t));
 }
 
 void TankWindow::clearMissile()
 {
-	for (std::list<Missile*>::iterator it=missiles.begin();
-			it != missiles.end(); ++it)
-	{
-		delete *it;
-	}
 	missiles.clear();
 }
 
 void TankWindow::clearEnemy()
 {
-	for (enemy_it it = enemies.begin();
-			it != enemies.end(); ++it)
-	{
-		delete *it;
-	}
 	enemies.clear();
 }
 
@@ -196,9 +190,9 @@ PlayerTank* TankWindow::killPlayer(PlayerTank* player, int n)
 }
 
 
-bool TankWindow::hitBarrier(const QRect& rect)
+bool TankWindow::hitBarrier(const Tank& tank)
 {
-	return walls.hit(rect) || steels.hit(rect) || waters.hit(rect);
+	return walls.hit(tank) || steels.hit(tank) || waters.hit(tank);
 }
 
 int TankWindow::getMap(int x, int y)
@@ -230,117 +224,41 @@ void TankWindow::timerEvent(QTimerEvent *event)
 
 void TankWindow::moveEnemy()
 {
-	for (std::list<EnemyTank*>::iterator it = enemies.begin();
-			it != enemies.end(); ++it)
-	{
-		if (!(*it)->isAlive())
-			continue;
-		(*it)->randomMove();
-		if (rand() %4 == 0)
-			(*it) -> shoot();
-	}
+	enemies.randomMove();
+	enemies.randomShoot();
 
 }
 
 void TankWindow::moveMissile()
 {
-	std::list<Missile*>::iterator it=missiles.begin();
-	while (it != missiles.end())
+	missiles.move();
+	/* hit symbol ? */
+	if (missiles.hit(symbolRect))
 	{
-		(*it)->move();
-		bool live = true;
-
-		/* Do missiles hit symbol ? */
-		if ((*it) -> hitRect(symbolRect)){
-			if (player1 != NULL)
-				player1 = killPlayer(player1, 1);
-			if (player2 != NULL)
-				player2 = killPlayer(player2, 2);
-			userLose();
-			break;
-		}
-		/* Do missiles hit wall ? */
-		if (walls.hitAndErase((*it)->getRect()))
-		{
-			live = false;
-			delete *it;
-			it = missiles.erase(it);
-		}
-		if (it == missiles.end())
-			break;
-		/* Do missiles hit steel? */
-		if (steels.hit((*it)->getRect()))
-		{
-			live = false;
-			delete *it;
-			it = missiles.erase(it);
-		}
-		if (it == missiles.end())
-			break;
-
-		/* Do missiles hit player1? */
-		if (player1 != NULL && 
-				(*it)-> hitRect(player1->getRect())) 
-		{
+		if (player1 != NULL)
 			player1 = killPlayer(player1, 1);
-			if (player1 == NULL && player2 == NULL)
-			{
-				userLose();
-				return;
-			}
-			delete *it;
-			it = missiles.erase(it);
-		}
-		if (it == missiles.end())
-			break;
-		/* Do missiles hit player2? */
-		if (player2 != NULL && 
-				(*it)-> hitRect(player2->getRect())) 
-		{
+		if (player2 != NULL)
 			player2 = killPlayer(player2, 2);
-			if (player1 == NULL && player2 == NULL)
-			{
-				userLose();
-				return;
-			}
-			delete *it;
-			it = missiles.erase(it);
-		}
-		if (it == missiles.end())
-			break;
-		/* Do missiles hit enemies? */
-		std::list<EnemyTank*>::iterator eit = enemies.begin();
-		while (eit != enemies.end())
-		{
-			if ((*eit)->isAlive() &&
-					(*it)-> hitRect((*eit)->getRect()))
-			{
-				delete *it;
-				it = missiles.erase(it);
-				killTank(*eit);
-				live = false;
-				break; // break 'enemies' loop
-			}
-			else
-			{
-				++eit;
-			}
-		}
-
-		if (it == missiles.end())
-			break;
-
-
-
-		if (live && (*it)->outOfMap())
-		{
-			live = false;
-			delete *it;
-			it = missiles.erase(it);
-		}
-		if (live) it++;
+		userLose();
+		return;
 	}
 
+	/* hit walls and steels */
+	missiles.hitAndEraseAndRemove(walls);
+	missiles.hitAndErase(steels);
+	/* hit enemies */
+	missiles.hitAndEraseAndRemove(enemies);
+	/* check if in map */
+	missiles.checkInMap();
+	/* hit player? */
+	if (player1 != NULL && missiles.hitAndErase(*player1))
+		player1 = killPlayer(player1, 1);
+	if (player2 != NULL && missiles.hitAndErase(*player2))
+		player2 = killPlayer(player2, 2);
+	/* is players lose? */
+	if (player1 == NULL && player2 == NULL)
+		userLose();
+	return;
 }
 
 void TankWindow::keyPressEvent(QKeyEvent *event)
@@ -460,7 +378,7 @@ void TankWindow::drawInfo(QPainter &painter)
 	painter.setFont(QFont("Arial Black", 30));
 	/* enemy info */
 	QPoint p(pic_width*map_width+4, 40);
-	int rem = max_enemy - enemies.size();
+	int rem = max_enemy - enemyNumber;
 	painter.drawText(p, QString("%1").arg(rem));
 	p.setY(200);
 	painter.drawText(p, QString("p1"));
@@ -494,18 +412,10 @@ void TankWindow::paintEvent(QPaintEvent *)
 	steels.draw(painter);
 	waters.draw(painter);
 	/* drawEnemy */
-	for (std::list<EnemyTank*>::iterator it = enemies.begin();
-			it != enemies.end();++it)
-	{
-		(*it)->drawTank(painter);
-	}
+	enemies.draw(painter);
 
 	/* drawMissile */
-	for (std::list<Missile*>::iterator it=missiles.begin();
-			it != missiles.end();++it)
-	{
-		(*it)->drawMissile(painter);
-	}
+	missiles.draw(painter);
 
 	/* draw player */
 	if (player1 !=NULL)

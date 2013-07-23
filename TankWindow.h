@@ -8,6 +8,8 @@
 #include "TankConst.h"
 #include "Blast.h"
 #include "MapElement.h"
+#include "Missiles.h"
+#include "Enemies.h"
 
 
 class Missile;
@@ -25,7 +27,7 @@ public:
 	TankWindow();
 	int getMap(int x, int y);
 	void addMissile(Missile * missile);
-	bool hitBarrier(const QRect& rect);
+	bool hitBarrier(const Tank& tank);
 	rect_list& getWalls();
 	rect_list& getSteels();
 	enemy_list& getEnemies();
@@ -97,9 +99,10 @@ private:
 	MapElement waters;
 
 	/* live enemy tanks */
-	enemy_list enemies;
+	Enemies enemies;
+	int enemyNumber;
 	/* all live missiles */
-	missile_list missiles;
+	Missiles missiles;
 	/* vector of enemy start points */
 	point_vector startPoints;
 

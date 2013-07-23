@@ -3,10 +3,11 @@
 
 #include "Tank.h"
 #include "TankWindow.h"
+#include "MapObject.h"
 #include <QPoint>
 #include <QRect>
 
-class Missile {
+class Missile :public MapObject {
 public:
 	Missile(QPoint startPoint, Direction::Direction dir,
 			Tank *tank);
@@ -14,26 +15,14 @@ public:
 	~Missile();
 	void move();
 
-	bool isAlive();
-	void kill();
-
-	bool hitRect(const QRect& rect);
-
-	bool outOfMap();
-
-	QRect& getRect();
-
-
-	void drawMissile(QPainter &painter);
+	void draw(QPainter &painter);
 private:
 	QPoint position;
-	QRect missile_rect;
 	Direction::Direction dir;
 
 	TankWindow* tankWindow;
 	Tank* tank;
 
-	bool alive;
 };
 
 #endif

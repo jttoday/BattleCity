@@ -1,17 +1,16 @@
 #include "Missile.h"
 #include "TankConst.h"
 #include <QPainter>
+#include <QDebug>
 
 Missile::Missile(QPoint startPoint, Direction::Direction dir,
 			Tank* tank)
-    :position(startPoint),
-	 missile_rect(position.x(), position.y(),
-					missile_width, missile_height)
+    : MapObject(position,	missile_width, missile_height)
 	
 {
+	this->position = startPoint;
 	this->dir = dir;
 	this->tank = tank;
-	alive = true;
 }
 
 Missile::~Missile()
@@ -38,46 +37,12 @@ void Missile::move()
 	default:
 		break;
 	}
-	missile_rect.moveTo(position);
-}
-
-bool Missile::isAlive()
-{
-	return alive;
-}
-
-void Missile::kill()
-{
-	alive = false;
-}
-
-bool Missile::hitRect(const QRect& rect)
-{
-	return missile_rect.intersects(rect);
-}
-
-QRect& Missile::getRect()
-{
-	return missile_rect;
-}
-
-bool Missile::outOfMap()
-{
-	int left = position.x();
-	int top = position.y();
-	int right = left+ missile_width;
-	int bottom = top+ missile_height;
-	if (left < 0 || top < 0 || right > pic_width* map_width
-			|| bottom > pic_height * map_height)
-		return true;
-	return false;
+	rect.moveTo(position);
 }
 
 
-void Missile::drawMissile(QPainter &painter)
+void Missile::draw(QPainter &painter)
 {
-	if (!alive)
-		return;
 	QImage missile;
 	missile.load(":/image/small/missile1.gif");
 	painter.drawImage(position, missile);

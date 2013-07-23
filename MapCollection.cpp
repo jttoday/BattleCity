@@ -99,3 +99,32 @@ bool MapCollection::hitAndEraseAndRemove(MapCollection &mp)
 	}
 	return hitted;
 }
+
+bool MapCollection::checkInMap()
+{
+	bool hitted = false;
+	obj_it it = objs.begin();
+    while (it!= objs.end())
+	{
+		if ((*it) -> outOfMap())
+		{
+			delete *it;
+			it = objs.erase(it);
+			hitted = true;
+		}
+		else 
+		{
+			it ++;
+		}
+	}
+	return hitted;
+}
+
+void MapCollection::clear()
+{
+	for (obj_it it = objs.begin(); it!= objs.end(); ++it)
+	{
+		delete *it;
+	}
+	objs.clear();
+}

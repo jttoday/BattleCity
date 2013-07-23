@@ -12,8 +12,6 @@ public:
 
 	void randomMove();
 
-protected:
-//	virtual void move(Direction::Direction dir);
 private:
 	int steps;
 
