@@ -8,7 +8,7 @@
 
 class PowerUp :public MapObject {
 public:
-	enum { bomb = 1, strong, fast };
+	enum { bomb = 1, strong, fast, stopper };
 	
 	PowerUp(const QPoint& point, int n)
 		:MapObject(point, 20, 20)

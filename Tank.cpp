@@ -73,6 +73,7 @@ bool Tank::move(Direction::Direction dir)
 	this->dir = dir;
 	rect.moveTo(position);
 
+
 	/* if cannot move to there */
 	if (outOfMap() || hitBarrier() || hitOtherTank())
 	{

@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "TankWindow.h"
 #include "Tank.h"
 #include "PlayerTank.h"
@@ -14,6 +15,14 @@
 #include <vector>
 #include <QDebug>
 #include <QTextOption>
+#include <QSound>
+
+static TankType* p1tank;
+static TankType* p2tank;
+static TankType* regular_tank;
+static TankType* fast_tank;
+static TankType* heavy_tank;
+
 
 TankWindow::TankWindow()
 	:walls("walls"), steels("steels"), grasses("grasses"),
@@ -31,6 +40,11 @@ TankWindow::TankWindow()
 					 this, SLOT(onEatingPowerUp(int, PlayerTank*)));
 	QObject::connect(this, SIGNAL(playerWin()),
 					 this, SLOT(onPlayerWin()));
+	p1tank = new TankType("p1tank", tank_speed, 3);
+	p2tank = new TankType("p2tank", tank_speed, 3);
+	regular_tank = new TankType("enemy1", tank_speed/3, 3);
+	fast_tank = new TankType("enemy2", tank_speed*2/3, 3);
+	heavy_tank = new TankType("enemy3", tank_speed/3, 5);		
 }
 
 void TankWindow::addMissile(Missile *missile)
@@ -43,11 +57,11 @@ void TankWindow::startGame()
 	clearMap();
 	loadMap();
 	/* add players */
-	player1 = new PlayerTank(startPoints[3], this,p1tank);
+	player1 = new PlayerTank(startPoints[3], this,*p1tank);
 	p1life = max_life;
 	if (playerNumber == 2)
 	{
-		player2 = new PlayerTank(startPoints[4], this, p2tank);
+		player2 = new PlayerTank(startPoints[4], this, *p2tank);
 		p2life = max_life;
 	}
 	/* add enemies */
@@ -157,11 +171,11 @@ void TankWindow::addEnemy()
 		return;
 	enemyNumber++;
 	QPoint p = startPoints[rand() % 3];	
-	const TankType *t;
+	TankType *t;
 	int n = rand() % 3;
-	if (n == 0) t = &regular_tank;
-	else if (n == 1) t = &fast_tank;
-	else t = &heavy_tank;
+	if (n == 0) t = regular_tank;
+	else if (n == 1) t = fast_tank;
+	else t = heavy_tank;
 	enemies.add(new EnemyTank(p, this, *t));
 }
 
@@ -206,13 +220,13 @@ PlayerTank* TankWindow::killPlayer(PlayerTank* player, int n)
 	{
 		if (--p1life == 0)
 			return NULL;
-		t = &p1tank;
+		t = p1tank;
 	}
 	else
 	{
 		if (--p2life == 0)
 			return NULL;
-		t = &p2tank;
+		t = p2tank;
 	}
 
 	return new PlayerTank(p ,this, *t);
@@ -306,7 +320,9 @@ void TankWindow::moveMissile()
 	if (player1 == NULL && player2 == NULL)
 		userLose();
 	if (enemies.size() == 0 && enemyNumber == max_enemy)
+	{
 		emit playerWin();
+	}
 	return;
 }
 
@@ -408,7 +424,10 @@ out:
 void TankWindow::drawSymbol(QPainter &painter)
 {
 	QImage symbol(":image/small/symbol.gif");
-	painter.fillRect(symbolRect, symbol);
+	if (!win && lose)
+		symbol.load(":image/small/destroy.gif");
+	painter.drawImage(symbolRect, symbol);
+
 }
 
 

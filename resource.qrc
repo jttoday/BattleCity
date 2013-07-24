@@ -6,6 +6,7 @@
         <file>image/small/steels.gif</file>
         <file>image/small/waters.gif</file>
         <file>image/small/symbol.gif</file>
+        <file>image/small/destroy.gif</file>
         <file>image/small/p1tankL.gif</file>
         <file>image/small/p1tankR.gif</file>
         <file>image/small/p1tankU.gif</file>
@@ -46,7 +47,7 @@
         <file>image/small/bomb.gif</file>
         <file>image/small/strong.gif</file>
         <file>image/small/fast.gif</file>
-        <file>image/small/timer.gif</file>
+        <file>image/small/stopper.gif</file>
         <file>image/small/select.gif</file>
         <file>image/small/select.png</file>
         <file>image/small/logo.gif</file>
