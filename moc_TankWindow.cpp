@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'TankWindow.h'
 **
-** Created: Wed Jul 24 15:20:55 2013
+** Created: Wed Jul 24 15:52:56 2013
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,25 +23,29 @@ static const uint qt_meta_data_TankWindow[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: signature, parameters, type, tag, flags
       14,   12,   11,   11, 0x05,
+      45,   11,   11,   11, 0x05,
 
  // slots: signature, parameters, type, tag, flags
-      62,   45,   11,   11, 0x08,
+      74,   57,   11,   11, 0x08,
+     107,   11,   11,   11, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_TankWindow[] = {
     "TankWindow\0\0,\0eatingPowerUp(int,PlayerTank*)\0"
-    "powerUpId,player\0onEatingPowerUp(int,PlayerTank*)\0"
+    "playerWin()\0powerUpId,player\0"
+    "onEatingPowerUp(int,PlayerTank*)\0"
+    "onPlayerWin()\0"
 };
 
 void TankWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -51,7 +55,9 @@ void TankWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         TankWindow *_t = static_cast<TankWindow *>(_o);
         switch (_id) {
         case 0: _t->eatingPowerUp((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< PlayerTank*(*)>(_a[2]))); break;
-        case 1: _t->onEatingPowerUp((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< PlayerTank*(*)>(_a[2]))); break;
+        case 1: _t->playerWin(); break;
+        case 2: _t->onEatingPowerUp((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< PlayerTank*(*)>(_a[2]))); break;
+        case 3: _t->onPlayerWin(); break;
         default: ;
         }
     }
@@ -89,9 +95,9 @@ int TankWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 4;
     }
     return _id;
 }
@@ -101,5 +107,11 @@ void TankWindow::eatingPowerUp(int _t1, PlayerTank * _t2)
 {
     void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void TankWindow::playerWin()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, 0);
 }
 QT_END_MOC_NAMESPACE

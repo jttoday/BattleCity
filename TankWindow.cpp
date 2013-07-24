@@ -29,6 +29,8 @@ TankWindow::TankWindow()
 	enemyNumber = 0;
 	QObject::connect(this, SIGNAL(eatingPowerUp(int, PlayerTank*)),
 					 this, SLOT(onEatingPowerUp(int, PlayerTank*)));
+	QObject::connect(this, SIGNAL(playerWin()),
+					 this, SLOT(onPlayerWin()));
 }
 
 void TankWindow::addMissile(Missile *missile)
@@ -57,6 +59,7 @@ void TankWindow::startGame()
 	strongTimer = startTimer(5000);
 	powerUpTimer = startTimer(7000);
 	lose = false;
+	win = false;
 }
 
 
@@ -117,6 +120,12 @@ void TankWindow::onEatingPowerUp(int powerUpId,
 		player->upgrade();
 
 	powerUp == NULL;
+}
+
+void TankWindow::onPlayerWin()
+{
+	userLose();
+	win = true;
 }
 
 void TankWindow::userLose()
@@ -296,6 +305,8 @@ void TankWindow::moveMissile()
 	/* is players lose? */
 	if (player1 == NULL && player2 == NULL)
 		userLose();
+	if (enemies.size() == 0 && enemyNumber == max_enemy)
+		emit playerWin();
 	return;
 }
 
@@ -493,6 +504,18 @@ void TankWindow::paintEvent(QPaintEvent *)
 	/* draw inform */
 	drawInfo(painter);
 
+	/* if win the game */
+	if (win)
+	{
+		QImage pic;
+		pic.load(":image/small/win.gif");
+		QImage gameOver = pic.scaled(5*pic_width
+				, 5*pic_height);
+		QPoint p(4*pic_width, 4*pic_height);
+		painter.drawImage(p, gameOver);
+		return; 
+	}
+
 	/* if lose draw game over*/
 	if (lose)
 	{
@@ -502,6 +525,7 @@ void TankWindow::paintEvent(QPaintEvent *)
 				, 5*pic_height);
 		QPoint p(4*pic_width, 4*pic_height);
 		painter.drawImage(p, gameOver);
+		return;
 	}
 }
 

@@ -37,9 +37,11 @@ protected:
 
 private slots:
 	void onEatingPowerUp(int powerUpId, PlayerTank* player);
+	void onPlayerWin();
 
 signals:
 	void eatingPowerUp(int , PlayerTank*);
+	void playerWin();
 private:
 
 	void startGame(); 
@@ -89,8 +91,9 @@ private:
 	int produceTimer;
 	int strongTimer;
 	int powerUpTimer;
-	/* Is player lose the game ? */
+	/* Is player lose or win the game ? */
 	bool lose;
+	bool win;
 	/* Is in the select window? */
 	bool choosing;
 	/* 1p or 2p */
