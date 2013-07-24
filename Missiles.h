@@ -4,6 +4,7 @@
 #include "MapCollection.h"
 class QPainter;
 class Missile;
+class Tank;
 
 class Missiles :public MapCollection {
 public:
@@ -12,6 +13,8 @@ public:
 	void draw(QPainter &painter);
 
 	void move();
+
+	bool hitAndEraseTank(Tank& tank);
 
 };
 

@@ -4,8 +4,8 @@
 #include "EnemyTank.h"
 #include "Missile.h"
 #include "Missiles.h"
-#include "Blast.h"
 #include "MapElement.h"
+#include "Blasts.h"
 #include <stdlib.h>
 #include <time.h>
 #include <QtGui>
@@ -24,8 +24,11 @@ TankWindow::TankWindow()
 	srand(time(NULL));
 	player1 = NULL;
 	player2 = NULL;
+	powerUp = NULL;
 	playerNumber = 1;
 	enemyNumber = 0;
+	QObject::connect(this, SIGNAL(eatingPowerUp(int, PlayerTank*)),
+					 this, SLOT(onEatingPowerUp(int, PlayerTank*)));
 }
 
 void TankWindow::addMissile(Missile *missile)
@@ -49,8 +52,10 @@ void TankWindow::startGame()
 	addEnemy();
 	/* add timers */
 	missileTimer = startTimer(30);
-	enemyTimer = startTimer(250);
+	enemyTimer = startTimer(100);
 	produceTimer = startTimer(3000);
+	strongTimer = startTimer(5000);
+	powerUpTimer = startTimer(7000);
 	lose = false;
 }
 
@@ -100,6 +105,19 @@ void TankWindow::loadMap()
 		}
 }
 
+void TankWindow::onEatingPowerUp(int powerUpId, 
+		PlayerTank* player)
+{
+
+	if (powerUpId == PowerUp::bomb)
+		enemies.clear();
+	else if (powerUpId == PowerUp::strong)
+		player->setStrong(true);
+	else if (powerUpId == PowerUp::fast)
+		player->upgrade();
+
+	powerUp == NULL;
+}
 
 void TankWindow::userLose()
 {
@@ -221,6 +239,24 @@ void TankWindow::timerEvent(QTimerEvent *event)
 	{
 		addEnemy();
 	}
+	else if (event->timerId() == strongTimer)
+	{
+		if (player1 != NULL)
+			player1->setStrong(false);
+		if (player2 != NULL)
+			player2->setStrong(false);
+	}
+	else if (event->timerId() == powerUpTimer)
+	{
+		if (powerUp != NULL)
+			delete powerUp;
+		powerUp = new PowerUp(
+				QPoint(rand() % (pic_width*map_width-40),
+					   rand() % (pic_height*map_height-40)), 
+					   rand() % 3 +1 );
+	}
+
+
 	repaint();
 }
 
@@ -249,13 +285,13 @@ void TankWindow::moveMissile()
 	missiles.hitAndEraseAndRemove(walls);
 	missiles.hitAndErase(steels);
 	/* hit enemies */
-	missiles.hitAndEraseAndRemove(enemies);
+	enemies.hitAndEraseAndRemove(missiles, blasts);
 	/* check if in map */
 	missiles.checkInMap();
 	/* hit player? */
-	if (player1 != NULL && missiles.hitAndErase(*player1))
+	if (player1 != NULL && missiles.hitAndEraseTank(*player1))
 		player1 = killPlayer(player1, 1);
-	if (player2 != NULL && missiles.hitAndErase(*player2))
+	if (player2 != NULL && missiles.hitAndEraseTank(*player2))
 		player2 = killPlayer(player2, 2);
 	/* is players lose? */
 	if (player1 == NULL && player2 == NULL)
@@ -284,8 +320,13 @@ void TankWindow::keyPressEvent(QKeyEvent *event)
 	}
 
 	bool isRestart = event->key()==Qt::Key_R;
+	if (event->key() == Qt::Key_K)
+	{
+		enemies.clear();
+		return;
+	}
 	/* Handle player1 */
-	if (player1 == NULL && !isRestart)
+	if (player1 == NULL)
 		goto p2;
 	switch (event->key())
 	{
@@ -304,13 +345,19 @@ void TankWindow::keyPressEvent(QKeyEvent *event)
 	case Qt::Key_Space:
 		player1->shoot();
 		break;
-
-	case Qt::Key_W:
     default:
         break;
     }
+	if (powerUp != NULL &&
+		(player1->getRect()).intersects(powerUp->getRect()))
+	{
+		emit eatingPowerUp(powerUp->powerUpId, player1);
+		delete powerUp;
+		powerUp = NULL;
+	}
+
 p2:
-	if (player2 == NULL && !isRestart)
+	if (player2 == NULL)
 		goto out;
 	switch (event->key())
 	{
@@ -331,6 +378,13 @@ p2:
 		break;
 	default:
 		break;
+	}
+	if (powerUp != NULL &&
+		(player2->getRect()).intersects(powerUp->getRect()))
+	{
+		emit eatingPowerUp(powerUp->powerUpId, player2);
+		delete powerUp;
+		powerUp = NULL;
 	}
 out:
 	if (player1 == NULL && player2 == NULL && isRestart)
@@ -416,6 +470,9 @@ void TankWindow::paintEvent(QPaintEvent *)
 	/* drawEnemy */
 	enemies.draw(painter);
 
+	/* drawBlasts */
+	blasts.draw(painter);
+
 	/* drawMissile */
 	missiles.draw(painter);
 
@@ -428,6 +485,10 @@ void TankWindow::paintEvent(QPaintEvent *)
 
 	/* draw grass */
 	grasses.draw(painter);
+
+	/* draw power up */
+	if (powerUp != NULL)
+		powerUp -> draw(painter);
 
 	/* draw inform */
 	drawInfo(painter);

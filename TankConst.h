@@ -23,16 +23,11 @@ const unsigned max_life = 4;
 class QRect;
 class EnemyTank;
 class Missile;
-class Blast;
 
 typedef std::list<QRect> rect_list;
 typedef rect_list::iterator rect_it;
-typedef std::list<EnemyTank*> enemy_list;
-typedef enemy_list::iterator enemy_it;
 typedef std::list<Missile*> missile_list;
 typedef missile_list::iterator missile_it;
-typedef std::list<Blast> blast_list;
-typedef blast_list::iterator blast_it;
 typedef std::vector<QPoint> point_vector;
 
 
@@ -73,8 +68,8 @@ const map firstMap = {
 /* different types of tanks */
 const TankType p1tank("p1tank", tank_speed, 3);
 const TankType p2tank("p2tank", tank_speed, 3);
-const TankType regular_tank("enemy1", tank_speed, 3);
-const TankType fast_tank("enemy2", tank_speed*2, 3);
-const TankType heavy_tank("enemy3", tank_speed, 5);
+const TankType regular_tank("enemy1", tank_speed/3, 3);
+const TankType fast_tank("enemy2", tank_speed*2/3, 3);
+const TankType heavy_tank("enemy3", tank_speed/3, 5);
 
 #endif

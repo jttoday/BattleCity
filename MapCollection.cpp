@@ -1,4 +1,7 @@
+#include <algorithm>
 #include "MapCollection.h"
+#include "Blasts.h"
+
 
 MapCollection::~MapCollection()
 {
@@ -99,6 +102,30 @@ bool MapCollection::hitAndEraseAndRemove(MapCollection &mp)
 	}
 	return hitted;
 }
+
+
+bool MapCollection::hitAndEraseAndRemove(MapCollection &mp, 
+		Blasts& blasts)
+{
+	obj_it it = objs.begin();
+	bool hitted = false;
+	while (it != objs.end())
+	{
+		if (mp.hitAndErase(**it))
+		{
+			blasts.add((*it)->getRect());
+			delete *it;
+			it = objs.erase(it);
+			hitted = true;
+		}
+		else
+		{
+			++it;
+		}
+	}
+	return hitted;
+}
+
 
 bool MapCollection::checkInMap()
 {

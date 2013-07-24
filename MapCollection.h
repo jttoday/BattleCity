@@ -6,6 +6,7 @@
 #include "TankConst.h"
 #include "MapObject.h"
 
+class Blasts;
 typedef std::list<MapObject*> obj_list;
 typedef obj_list::iterator obj_it;
 typedef obj_list::const_iterator const_obj_it;
@@ -20,6 +21,9 @@ public:
 	virtual bool hitAndRemove(MapCollection &mp) const;
 	virtual bool hitAndErase(const MapCollection &mp);
 	virtual bool hitAndEraseAndRemove(MapCollection &mp);
+
+	virtual bool hitAndEraseAndRemove(MapCollection &mp, 
+			Blasts& blasts);
 
 	virtual bool checkInMap();
 

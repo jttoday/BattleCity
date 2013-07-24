@@ -16,7 +16,7 @@ public:
 
 	virtual ~MapObject() {}
 
-	virtual const QRect getRect() const {
+	virtual const QRect& getRect() const {
 		return rect;
 	}
 	
@@ -34,6 +34,10 @@ public:
 				|| bottom > pic_height * map_height)
 			return true;
 		return false;
+	}
+
+	virtual void moveTo(const QPoint& p) {
+		rect.moveTo(p);
 	}
 protected:
 	QRect rect;

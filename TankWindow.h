@@ -6,10 +6,12 @@
 #include <QPainter>
 #include <QImage>
 #include "TankConst.h"
-#include "Blast.h"
+#include "MapObject.h"
 #include "MapElement.h"
 #include "Missiles.h"
 #include "Enemies.h"
+#include "Blasts.h"
+#include "PowerUp.h"
 
 
 class Missile;
@@ -28,13 +30,16 @@ public:
 	int getMap(int x, int y);
 	void addMissile(Missile * missile);
 	bool hitBarrier(const Tank& tank);
-	rect_list& getWalls();
-	rect_list& getSteels();
-	enemy_list& getEnemies();
 protected:
 	void paintEvent(QPaintEvent *event);
 	void keyPressEvent(QKeyEvent *event);
 	void timerEvent(QTimerEvent *);
+
+private slots:
+	void onEatingPowerUp(int powerUpId, PlayerTank* player);
+
+signals:
+	void eatingPowerUp(int , PlayerTank*);
 private:
 
 	void startGame(); 
@@ -82,6 +87,8 @@ private:
 	int missileTimer;
 	int enemyTimer;
 	int produceTimer;
+	int strongTimer;
+	int powerUpTimer;
 	/* Is player lose the game ? */
 	bool lose;
 	/* Is in the select window? */
@@ -103,11 +110,16 @@ private:
 	int enemyNumber;
 	/* all live missiles */
 	Missiles missiles;
+	/* blasts is what shows when tanks die */
+	Blasts blasts;
+	/* power up */
+	PowerUp* powerUp;
 	/* vector of enemy start points */
 	point_vector startPoints;
 
 	/* where Symbol lies */
 	QRect symbolRect;
+
 };
 
 #endif

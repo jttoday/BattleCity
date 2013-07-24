@@ -26,8 +26,6 @@ Tank::Tank(QPoint startPoint, TankWindow *tankWindow,
 
 Tank::~Tank()
 {
-	if (!alive)
-		delete blast;
 }
 
 void Tank::moveUp()
@@ -134,12 +132,6 @@ void Tank::downMissile()
 	missile_num -- ;
 }
 
-bool Tank::hitRect(const QRect& rect)
-{
-
-	return getRect().intersects(rect);
-}
-
 bool Tank::hitBarrier()
 {
 	return tankWindow->hitBarrier(*this);
@@ -150,14 +142,6 @@ bool Tank::hitOtherTank()
 #ifdef NO_HIT_OTHER
 	return false;
 #endif
-	enemy_list enemies = tankWindow->getEnemies();
-	for (enemy_it it = enemies.begin();it != enemies.end();++it)
-	{
-		if (*it != this && (*it)-> isAlive()
-				&& (*it)->hitRect(getRect()))
-			return true;
-	}
-	return false;
 }
 
 bool Tank::isAlive()
@@ -165,10 +149,10 @@ bool Tank::isAlive()
 	return alive;
 }
 
-void Tank::kill()
+bool Tank::kill()
 {
 	alive = false;
-	blast = new Blast(getRect());
+	return true;
 }
 
 
@@ -197,20 +181,18 @@ void Tank::drawTank(QPainter &painter)
 
 void Tank::drawTankPict(QPainter &painter, QImage& tank)
 {
-	if (!alive)
-	{
-		blast->drawBlast(painter);
-	}
-	else
-	{
-		painter.drawImage(position, tank);
-	}
+	painter.drawImage(position, tank);
 }
 	
 void Tank::undo()
 {
 	position = old_position;
 	rect.moveTo(old_position);
+}
+
+void Tank::upgrade()
+{
+	max_missile *= 1.5;
 }
 
 

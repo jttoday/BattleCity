@@ -15,12 +15,6 @@ public:
 private:
 	int steps;
 
-	/* enemy tank has different types */
-	int types;
-
-	/* different type has different speed */
-	int speed;
-
 	void changeDir();
 };
 

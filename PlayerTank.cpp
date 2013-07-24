@@ -1,23 +1,44 @@
 #include "PlayerTank.h"
+#include <QDebug>
 
 PlayerTank::PlayerTank(QPoint startPoint, TankWindow *tankWindow, 
-			const TankType& type,int maxlife,
-			Direction::Direction dir)
+			const TankType& type,Direction::Direction dir)
 	:Tank(startPoint, tankWindow, type, dir),
-	 life(maxlife)
+	strong(true),
+	armor(rect, "protect", 6, true)
 {
 
 }
 
-void PlayerTank::kill()
+bool PlayerTank::kill()
 {
-	Tank::kill();
-	
+	if (strong) 
+	{
+		return false;
+	}
+	return Tank::kill();
 }
 
-int PlayerTank::getLife()
+bool PlayerTank::isStrong()
 {
-	return life;
+	return strong;
 }
+
+void PlayerTank::setStrong(bool strong)
+{
+	this->strong = strong;
+}
+
+void PlayerTank::drawTank(QPainter& painter)
+{
+	Tank::drawTank(painter);
+	if (isStrong())
+	{
+		armor.moveTo(position);
+		armor.draw(painter);
+	}
+}
+
+
 
 	

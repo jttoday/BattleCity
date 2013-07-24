@@ -1,5 +1,6 @@
 #include "Missiles.h"
 #include "Missile.h"
+#include "Tank.h"
 #include <QPainter>
 
 void Missiles::add(Missile* missile)
@@ -23,4 +24,19 @@ void Missiles::move()
 		Missile* missile = (Missile*) (*it);
 		missile -> move();
 	}
+}
+
+bool Missiles::hitAndEraseTank(Tank& tank)
+{
+	for (obj_it it = objs.begin(); it!= objs.end(); ++it)
+	{
+		if ((*it) -> intersects(tank))
+		{
+			delete *it;
+			objs.erase(it);
+
+			return tank.kill();
+		}
+	}
+	return false;
 }

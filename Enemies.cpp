@@ -22,7 +22,7 @@ void Enemies::randomShoot()
 	for (obj_it it= objs.begin(); it != objs.end(); ++it)
 	{
 		EnemyTank* enemy = (EnemyTank*) (*it);
-		if (rand() % 4 == 0)
+		if (rand() % 12 == 0)
 			enemy->shoot();
 	}
 }

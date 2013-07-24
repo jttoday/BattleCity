@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <QtGui>
-#include <iostream>
 
 
 EnemyTank::EnemyTank(QPoint startPoint, TankWindow *tankWindow, 

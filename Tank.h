@@ -30,14 +30,15 @@ public:
 	void downMissile();
 	/* is it alive? */
 	bool isAlive();
-	virtual void kill();
+	/* return true if killed */
+	virtual bool kill();
 	/* draw itself */
-	void drawTank(QPainter &painter);
+	virtual void drawTank(QPainter &painter);
 
 	/*  if Tank is not allowed to move */
 	void undo();
-
-	bool hitRect(const QRect& rect);
+	/* set max_missile */
+	void upgrade();
 
 protected:
 	/* move in certail direction
@@ -57,6 +58,8 @@ protected:
 	/* Tank direction */
 	Direction::Direction dir;
 
+	QPoint position;
+
 	QString name;
 
 	/* how many missiles can a tank have */
@@ -64,10 +67,8 @@ protected:
 	/* missile  number */
 	int missile_num;
 private:
-	QPoint position;
 	QPoint old_position;
 	TankWindow *tankWindow;
-	Blast* blast;
 
 
 	int speed;
