@@ -97,6 +97,7 @@ void Tank::shoot()
 {
 	if (!alive || missile_num >= max_missile)
 		return;
+	PlayMusic("fire.wav");
 	missile_num++;
 	QPoint missilePoint;
 	int x = position.x();

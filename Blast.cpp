@@ -8,6 +8,7 @@
 
 Blast::Blast(const QRect& rect)
 {
+	PlayMusic("blast.wav");
 	this->rect = rect;
 	step = 3;
 }

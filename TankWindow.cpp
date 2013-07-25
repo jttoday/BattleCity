@@ -28,7 +28,8 @@ TankWindow::TankWindow()
 	:walls("walls"), steels("steels"), grasses("grasses"),
 	 waters("waters")
 {
-	choosing = true;
+
+    choosing = true;
 	setFixedSize(pic_width*(map_width+2), pic_height*map_height);
 	srand(time(NULL));
 	player1 = NULL;
@@ -54,9 +55,10 @@ void TankWindow::addMissile(Missile *missile)
 
 void TankWindow::startGame()
 {
+	PlayMusic("start.wav");
 	clearMap();
 	loadMap();
-	/* add players */
+		/* add players */
 	player1 = new PlayerTank(startPoints[3], this,*p1tank);
 	p1life = max_life;
 	if (playerNumber == 2)
@@ -308,7 +310,8 @@ void TankWindow::moveMissile()
 	missiles.hitAndEraseAndRemove(walls);
 	missiles.hitAndErase(steels);
 	/* hit enemies */
-	enemies.hitAndEraseAndRemove(missiles, blasts);
+	if	(enemies.hitAndEraseAndRemove(missiles, blasts))
+		PlayMusic("blast.wav");
 	/* check if in map */
 	missiles.checkInMap();
 	/* hit player? */

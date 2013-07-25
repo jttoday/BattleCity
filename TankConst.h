@@ -55,4 +55,6 @@ const map firstMap = {
 
 }
 
+void PlayMusic(const QString& name);
+
 #endif
